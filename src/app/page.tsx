@@ -4,7 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { ProductCard } from "@/components/products/ProductCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useState, useMemo } from "react";
 
 // Mock data for products
 const products = [
@@ -21,6 +22,7 @@ const products = [
     description: "Energy drink",
     price: 150.00,
     seller: "sujee store",
+    category: "beverages",
   },
   {
     id: 2,
@@ -28,6 +30,7 @@ const products = [
     description: "A gentle shampoo that cleans and nourishes your hair for a soft, fresh feel",
     price: 450.00,
     seller: "sujee store",
+    category: "personal-care",
   },
   {
     id: 3,
@@ -35,6 +38,7 @@ const products = [
     description: "A refreshing soap that gently cleans your skin and leaves it soft and smooth",
     price: 160.00,
     seller: "sujee store",
+    category: "personal-care",
   },
   {
     id: 4,
@@ -42,6 +46,7 @@ const products = [
     description: "Drink",
     price: 450.00,
     seller: "sujee store",
+    category: "beverages",
   },
 
   {
@@ -49,14 +54,16 @@ const products = [
     title: "Milk",
     description: "Drink",
     price: 150.00,
-    seller: "sujee store"
+    seller: "sujee store",
+    category: "beverages",
   },
     {
     id:6,
     title: "Apple Juice",
     description: "Fresh Drink",
     price: 120.00,
-    seller: "sujee store"
+    seller: "sujee store",
+    category: "beverages",
   },
 
     {
@@ -64,7 +71,8 @@ const products = [
     title: "Rice 5kg",
     description: "White raw rice",
     price: 450.00,
-    seller: "Sujee Store"
+    seller: "Sujee Store",
+    category: "groceries",
   },
 
     {
@@ -72,7 +80,8 @@ const products = [
     title: "Sugar 1kg",
     description: "Refined sugar",
     price: 120.00,
-    seller: "Sujee Store"
+    seller: "Sujee Store",
+    category: "groceries",
   },
 
    {
@@ -80,7 +89,8 @@ const products = [
     title: "Sunflower Oil 1L",
     description: "Cooking oil",
     price: 190.00,
-    seller: "Sujee Store"
+    seller: "Sujee Store",
+    category: "groceries",
   },
 
     {
@@ -88,7 +98,8 @@ const products = [
     title: "Salt 1kg",
     description: "Iodized salt",
     price: 25.00,
-    seller: "Sujee Store"
+    seller: "Sujee Store",
+    category: "groceries",
   },
 
     {
@@ -96,7 +107,8 @@ const products = [
     title: "Tea Powder 250g",
     description: "Premium tea blend",
     price: 150.00,
-    seller: "Sujee Store"
+    seller: "Sujee Store",
+    category: "beverages",
   },
 
     {
@@ -104,7 +116,8 @@ const products = [
     title: "Bread",
     description: "Fresh bakery bread",
     price: 50.00,
-    seller: "Sujee Store"
+    seller: "Sujee Store",
+    category: "groceries",
   },
 
    {
@@ -112,12 +125,66 @@ const products = [
     title: "Eggs (6 pcs)",
     description: "Farm eggs",
     price: 60.00,
-    seller: "Sujee Store"
+    seller: "Sujee Store",
+    category: "groceries",
   }
 
 ];
 
 export default function Home() {
+  // State for search input (what user is typing)
+  const [searchInput, setSearchInput] = useState("");
+  // State for active search query (what to actually filter by - only set on Enter)
+  const [searchQuery, setSearchQuery] = useState("");
+  // State for category filter
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  // State for sort option
+  const [sortOption, setSortOption] = useState("newest");
+
+  // Handle Enter key press for search
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      setSearchQuery(searchInput);
+    }
+  };
+
+  // Filter and sort products based on independent filters
+  const filteredProducts = useMemo(() => {
+    let result = [...products];
+
+    // Apply search filter (only if searchQuery is set via Enter key)
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(
+        (product) =>
+          product.title.toLowerCase().includes(query) ||
+          product.description.toLowerCase().includes(query) ||
+          product.seller.toLowerCase().includes(query)
+      );
+    }
+
+    // Apply category filter (independent of search)
+    if (categoryFilter !== "all") {
+      result = result.filter((product) => product.category === categoryFilter);
+    }
+
+    // Apply sorting (independent of search and category)
+    switch (sortOption) {
+      case "price-low":
+        result.sort((a, b) => a.price - b.price);
+        break;
+      case "price-high":
+        result.sort((a, b) => b.price - a.price);
+        break;
+      case "newest":
+      default:
+        // Keep original order for newest
+        break;
+    }
+
+    return result;
+  }, [searchQuery, categoryFilter, sortOption]);
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -134,24 +201,39 @@ export default function Home() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input 
-              placeholder="Search products..." 
-              className="pl-10 w-full"
+              placeholder="Search products... (Press Enter to search)" 
+              className="pl-10 pr-10 w-full"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
             />
+            {(searchInput || searchQuery) && (
+              <button
+                onClick={() => {
+                  setSearchInput("");
+                  setSearchQuery("");
+                }}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Clear search"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
           <div className="flex gap-4">
-            <Select>
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="electronics">Electronics</SelectItem>
-                <SelectItem value="fashion">Fashion</SelectItem>
-                <SelectItem value="home">Home & Living</SelectItem>
+                <SelectItem value="beverages">Beverages</SelectItem>
+                <SelectItem value="groceries">Groceries</SelectItem>
+                <SelectItem value="personal-care">Personal Care</SelectItem>
               </SelectContent>
             </Select>
 
-            <Select>
+            <Select value={sortOption} onValueChange={setSortOption}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Newest" />
               </SelectTrigger>
@@ -164,18 +246,55 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Results Info */}
+        {searchQuery && (
+          <div className="mb-4 text-sm text-gray-600">
+            Showing {filteredProducts.length} result{filteredProducts.length !== 1 ? 's' : ''} for "{searchQuery}"
+            {filteredProducts.length > 0 && (
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setSearchInput("");
+                }}
+                className="ml-2 text-blue-600 hover:underline"
+              >
+                Clear search
+              </button>
+            )}
+          </div>
+        )}
+
         {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              title={product.title}
-              description={product.description}
-              price={product.price}
-              seller={product.seller}
-            />
-          ))}
-        </div>
+        {filteredProducts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                title={product.title}
+                description={product.description}
+                price={product.price}
+                seller={product.seller}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">No products found</p>
+            {(searchQuery || categoryFilter !== "all") && (
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setSearchInput("");
+                  setCategoryFilter("all");
+                  setSortOption("newest");
+                }}
+                className="mt-4 text-blue-600 hover:underline"
+              >
+                Clear all filters
+              </button>
+            )}
+          </div>
+        )}
       </main>
     </div>
   );
