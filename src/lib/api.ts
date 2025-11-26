@@ -125,4 +125,52 @@ export const authApi = {
   },
 };
 
+export const adminApi = {
+  async getPendingSellers(token: string) {
+    const response = await fetch(`${API_BASE_URL}/api/admin/sellers/pending`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse<{ success: boolean; sellers: any[] }>(response);
+  },
+
+  async approveSeller(token: string, id: string) {
+    const response = await fetch(`${API_BASE_URL}/api/admin/sellers/${id}/approve`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse<{ success: boolean; message: string }>(response);
+  },
+
+  async rejectSeller(token: string, id: string) {
+    const response = await fetch(`${API_BASE_URL}/api/admin/sellers/${id}/reject`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse<{ success: boolean; message: string }>(response);
+  },
+
+  async getPendingDeliverers(token: string) {
+    const response = await fetch(`${API_BASE_URL}/api/admin/deliverers/pending`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse<{ success: boolean; deliverers: any[] }>(response);
+  },
+
+  async approveDeliverer(token: string, id: string) {
+    const response = await fetch(`${API_BASE_URL}/api/admin/deliverers/${id}/approve`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse<{ success: boolean; message: string }>(response);
+  },
+
+  async rejectDeliverer(token: string, id: string) {
+    const response = await fetch(`${API_BASE_URL}/api/admin/deliverers/${id}/reject`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse<{ success: boolean; message: string }>(response);
+  },
+};
+
 export { ApiError };
