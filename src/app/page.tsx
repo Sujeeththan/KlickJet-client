@@ -43,6 +43,78 @@ const products = [
     price: 450.00,
     seller: "sujee store",
   },
+
+  {
+    id:5,
+    title: "Milk",
+    description: "Drink",
+    price: 150.00,
+    seller: "sujee store"
+  },
+    {
+    id:6,
+    title: "Apple Juice",
+    description: "Fresh Drink",
+    price: 120.00,
+    seller: "sujee store"
+  },
+
+    {
+    id: 7,
+    title: "Rice 5kg",
+    description: "White raw rice",
+    price: 450.00,
+    seller: "Sujee Store"
+  },
+
+    {
+    id: 8,
+    title: "Sugar 1kg",
+    description: "Refined sugar",
+    price: 120.00,
+    seller: "Sujee Store"
+  },
+
+   {
+    id: 9,
+    title: "Sunflower Oil 1L",
+    description: "Cooking oil",
+    price: 190.00,
+    seller: "Sujee Store"
+  },
+
+    {
+    id: 10,
+    title: "Salt 1kg",
+    description: "Iodized salt",
+    price: 25.00,
+    seller: "Sujee Store"
+  },
+
+    {
+    id: 11,
+    title: "Tea Powder 250g",
+    description: "Premium tea blend",
+    price: 150.00,
+    seller: "Sujee Store"
+  },
+
+    {
+    id: 12,
+    title: "Bread",
+    description: "Fresh bakery bread",
+    price: 50.00,
+    seller: "Sujee Store"
+  },
+
+   {
+    id: 13,
+    title: "Eggs (6 pcs)",
+    description: "Farm eggs",
+    price: 60.00,
+    seller: "Sujee Store"
+  }
+
 ];
 
 export default function Home() {
