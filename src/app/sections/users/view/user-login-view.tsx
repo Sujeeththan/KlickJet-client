@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Controller, useForm } from "react-hook-form"
-import { useState } from "react"
-import * as z from "zod"
-import Link from "next/link"
-import { useAuth } from "@/contexts/AuthContext"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+import { useState } from "react";
+import * as z from "zod";
+import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -15,20 +15,17 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
 const formSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Please enter a valid email address"),
+  email: z.string().min(1, "Email is required"),
   password: z
     .string()
     .min(8, "Password must be at least 8 characters")
@@ -36,11 +33,11 @@ const formSchema = z.object({
       /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
       "Password must contain uppercase, lowercase, number and special character"
     ),
-})
+});
 
 export function FormRhfInput() {
-  const { login } = useAuth()
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { login } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,19 +45,19 @@ export function FormRhfInput() {
       email: "",
       password: "",
     },
-  })
+  });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     try {
-      setIsSubmitting(true)
+      setIsSubmitting(true);
       await login({
         email: data.email,
         password: data.password,
-      })
+      });
     } catch (error) {
-      console.error("Login error:", error)
+      console.error("Login error:", error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
@@ -147,5 +144,5 @@ export function FormRhfInput() {
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }
