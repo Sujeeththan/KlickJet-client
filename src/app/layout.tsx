@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "KlickJet - E-Commerce Platform",
-  description: "Multi-role e-commerce platform for customers, sellers, and deliverers",
+  title: "KlickJet Online ordering system",
+  description: "Multi-role online ordering  for customers, sellers, and deliverers",
 };
 
 export default function RootLayout({
