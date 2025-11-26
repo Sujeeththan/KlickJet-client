@@ -30,10 +30,7 @@ const formSchema = z.object({
     .min(2, "Name must be at least 2 characters")
     .max(50, "Name cannot exceed 50 characters")
     .regex(/^[A-Za-z]+(?:[ -][A-Za-z]+)*$/, "Please enter a valid name"),
-  email: z
-    .string()
-    .min(1, "Email is required")
-    ,
+  email: z.string().min(1, "Email is required"),
   password: z
     .string()
     .min(8, "Password must be at least 8 characters")
@@ -46,7 +43,7 @@ const formSchema = z.object({
     .min(10, "Phone number must be at least 10 digits")
     .max(15, "Phone number cannot exceed 15 digits")
     .regex(/^[0-9]+$/, "Phone number must contain only numbers"),
-  address: z.string().optional(),
+  address: z.string().min(2, "Address is request"),
 });
 
 type FormData = z.infer<typeof formSchema>;
