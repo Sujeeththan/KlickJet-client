@@ -1,0 +1,500 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { adminApi } from "@/lib/api";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { CheckCircle2, XCircle, Trash2, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { toast } from "sonner";
+
+interface Seller {
+  _id: string;
+  name: string;
+  shopName: string;
+  email: string;
+  phone_no: string;
+  address: string;
+  status: string;
+  rejectionReason?: string;
+  createdAt: string;
+}
+
+const ITEMS_PER_PAGE = 10;
+
+export default function SellersPage() {
+  const { token } = useAuth();
+  const [allSellers, setAllSellers] = useState<Seller[]>([]);
+  const [filteredSellers, setFilteredSellers] = useState<Seller[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+
+  // Modal states
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [selectedSeller, setSelectedSeller] = useState<Seller | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [approveDialogOpen, setApproveDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  useEffect(() => {
+    if (token) {
+      fetchData();
+    }
+  }, [token]);
+
+  useEffect(() => {
+    filterSellers();
+  }, [allSellers, statusFilter]);
+
+  const fetchData = async () => {
+    if (!token) return;
+
+    setLoading(true);
+    try {
+      const response = await adminApi.getAllSellers(token);
+      setAllSellers(response.sellers || []);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to fetch sellers");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterSellers = () => {
+    if (statusFilter === "all") {
+      setFilteredSellers(allSellers);
+    } else {
+      setFilteredSellers(allSellers.filter(seller => seller.status === statusFilter));
+    }
+    setCurrentPage(1);
+  };
+
+  const handleApproveClick = (seller: Seller) => {
+    setSelectedSeller(seller);
+    setApproveDialogOpen(true);
+  };
+
+  const handleRejectClick = (seller: Seller) => {
+    setSelectedSeller(seller);
+    setRejectionReason("");
+    setRejectDialogOpen(true);
+  };
+
+  const handleDeleteClick = (seller: Seller) => {
+    setSelectedSeller(seller);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmApprove = async () => {
+    if (!selectedSeller || !token) return;
+
+    setActionLoading(selectedSeller._id);
+    try {
+      await adminApi.approveSeller(token, selectedSeller._id);
+      toast.success("Seller approved successfully");
+      setApproveDialogOpen(false);
+      setSelectedSeller(null);
+      fetchData();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to approve seller");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const confirmReject = async () => {
+    if (!selectedSeller || !token) return;
+
+    if (!rejectionReason.trim()) {
+      toast.error("Please provide a rejection reason");
+      return;
+    }
+
+    setActionLoading(selectedSeller._id);
+    try {
+      await adminApi.rejectSeller(token, selectedSeller._id, rejectionReason);
+      toast.success("Seller rejected successfully");
+      setRejectDialogOpen(false);
+      setSelectedSeller(null);
+      setRejectionReason("");
+      fetchData();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to reject seller");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedSeller || !token) return;
+
+    setActionLoading(selectedSeller._id);
+    try {
+      await adminApi.deleteSeller(token, selectedSeller._id);
+      toast.success("Seller deleted successfully");
+      setDeleteDialogOpen(false);
+      setSelectedSeller(null);
+      fetchData();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete seller");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "approved":
+        return <Badge className="bg-green-500 hover:bg-green-600">Approved</Badge>;
+      case "pending":
+        return <Badge className="bg-yellow-500 hover:bg-yellow-600">Pending</Badge>;
+      case "rejected":
+        return <Badge className="bg-red-500 hover:bg-red-600">Rejected</Badge>;
+      default:
+        return <Badge>{status}</Badge>;
+    }
+  };
+
+  // Pagination
+  const totalPages = Math.ceil(filteredSellers.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentSellers = filteredSellers.slice(startIndex, endIndex);
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  return (
+    <div className="flex-1 space-y-4 p-8 pt-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Sellers</h2>
+          <p className="text-muted-foreground">
+            Manage seller applications and approvals
+          </p>
+        </div>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="pending">Pending</SelectItem>
+            <SelectItem value="approved">Approved</SelectItem>
+            <SelectItem value="rejected">Rejected</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Seller Management</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="flex justify-center items-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Shop Name</TableHead>
+                      <TableHead>Owner Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {currentSellers.length > 0 ? (
+                      currentSellers.map((seller) => (
+                        <TableRow key={seller._id}>
+                          <TableCell className="font-medium">{seller.shopName}</TableCell>
+                          <TableCell>{seller.name}</TableCell>
+                          <TableCell>{seller.email}</TableCell>
+                          <TableCell>{seller.phone_no}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-col gap-1">
+                              {getStatusBadge(seller.status)}
+                              {seller.status === "rejected" && seller.rejectionReason && (
+                                <span className="text-xs text-muted-foreground">
+                                  Reason: {seller.rejectionReason}
+                                </span>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {new Date(seller.createdAt).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              {seller.status === "pending" && (
+                                <>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                                    onClick={() => handleApproveClick(seller)}
+                                    disabled={actionLoading === seller._id}
+                                  >
+                                    {actionLoading === seller._id ? (
+                                      <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                      <CheckCircle2 className="h-4 w-4" />
+                                    )}
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    onClick={() => handleRejectClick(seller)}
+                                    disabled={actionLoading === seller._id}
+                                  >
+                                    {actionLoading === seller._id ? (
+                                      <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                      <XCircle className="h-4 w-4" />
+                                    )}
+                                  </Button>
+                                </>
+                              )}
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+                                onClick={() => handleDeleteClick(seller)}
+                                disabled={actionLoading === seller._id}
+                              >
+                                {actionLoading === seller._id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Trash2 className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                          No sellers found
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4">
+                  <p className="text-sm text-muted-foreground">
+                    Showing {startIndex + 1} to {Math.min(endIndex, filteredSellers.length)} of{" "}
+                    {filteredSellers.length} sellers
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={goToPreviousPage}
+                      disabled={currentPage === 1}
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-1" />
+                      Previous
+                    </Button>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">
+                        Page {currentPage} of {totalPages}
+                      </span>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={goToNextPage}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Approve Dialog */}
+      <Dialog open={approveDialogOpen} onOpenChange={setApproveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Approve Seller</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to approve {selectedSeller?.shopName}?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setApproveDialogOpen(false);
+                setSelectedSeller(null);
+              }}
+              disabled={actionLoading !== null}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmApprove}
+              disabled={actionLoading !== null}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {actionLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Approving...
+                </>
+              ) : (
+                "Confirm Approve"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reject Dialog with Reason */}
+      <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reject Seller</DialogTitle>
+            <DialogDescription>
+              Please provide a reason for rejecting {selectedSeller?.shopName}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="rejection-reason">Rejection Reason *</Label>
+              <Textarea
+                id="rejection-reason"
+                placeholder="Enter the reason for rejection..."
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                rows={4}
+                className="resize-none"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setRejectDialogOpen(false);
+                setSelectedSeller(null);
+                setRejectionReason("");
+              }}
+              disabled={actionLoading !== null}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmReject}
+              disabled={actionLoading !== null || !rejectionReason.trim()}
+            >
+              {actionLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Rejecting...
+                </>
+              ) : (
+                "Confirm Reject"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Seller</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to permanently delete {selectedSeller?.shopName}? 
+              This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDeleteDialogOpen(false);
+                setSelectedSeller(null);
+              }}
+              disabled={actionLoading !== null}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={actionLoading !== null}
+            >
+              {actionLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Confirm Delete"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
