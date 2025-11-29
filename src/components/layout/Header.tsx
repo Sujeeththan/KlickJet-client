@@ -5,10 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { User, ShoppingCart, LogOut } from "lucide-react";
-import { LoginModal } from "@/components/auth/LoginModal";
-import { RegisterCustomerModal } from "@/components/auth/RegisterCustomerModal";
-import { RegisterSellerModal } from "@/components/auth/RegisterSellerModal";
-import { RegisterDelivererModal } from "@/components/auth/RegisterDelivererModal";
+import { LoginModal } from "@/features/auth/LoginModal";
+import { RegisterCustomerModal } from "@/features/auth/RegisterCustomerModal";
+import { RegisterSellerModal } from "@/features/auth/RegisterSellerModal";
+import { RegisterDelivererModal } from "@/features/auth/RegisterDelivererModal";
 
 export function Header() {
   const { user, logout } = useAuth();

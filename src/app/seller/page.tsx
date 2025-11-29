@@ -1,8 +1,8 @@
 "use client";
 
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ProtectedRoute } from "@/features/auth/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
-import { StatCard } from "@/components/seller/StatCard";
+import { StatCard } from "@/features/seller/StatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Package, ShoppingCart, DollarSign, TrendingUp } from "lucide-react";

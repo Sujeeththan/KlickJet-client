@@ -22,7 +22,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { adminApi } from "@/lib/api";
+import { adminApi } from "@/services/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader2, CheckCircle, XCircle, Trash2 } from "lucide-react";
 

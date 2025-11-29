@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { authApi, ApiError } from '@/lib/api';
+import { authApi, ApiError } from '@/services/api';
 import { AuthContextType, User, LoginCredentials, RegisterData } from '@/types/auth';
 import { toast } from 'sonner';
 
