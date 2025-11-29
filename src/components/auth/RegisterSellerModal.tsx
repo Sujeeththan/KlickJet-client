@@ -19,12 +19,49 @@ import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
-  shopName: z.string().min(3, "Shop name must be at least 3 characters"),
-  name: z.string().min(2, "Owner name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  phone_no: z.string().min(10, "Phone number must be at least 10 digits"),
-  address: z.string().min(5, "Address is required"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+shopName: z
+    .string()
+    .trim()
+    .min(1, "Shop name is required")
+    .regex(
+      /^[A-Za-z0-9 ]{3,}$/,
+      "Shop name must be at least 3 characters and contain only letters, numbers, and spaces"
+    ),
+
+name: z
+  .string()
+  .trim()
+  .min(1, "Owner name is required")
+  .regex(
+    /^[A-Za-z ]{2,}$/,
+    "Owner name must be at least 2 characters and contain only letters and spaces"
+  ),
+
+  email: z
+    .string()
+    .trim()
+    .min(1, "Email is required")
+    .regex(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/, "Enter a valid email address")
+    .toLowerCase(),
+
+  phone_no: z
+    .string()
+    .trim()
+    .min(1, "Phone number is required")
+    .regex(/^[0-9]{10,15}$/, "Phone number must be 10–15 digits"),
+
+  address: z
+    .string()
+    .trim()
+    .min(5, "Address is required"),
+
+  password: z
+    .string()
+    .min(1, "Password is required")
+    .regex(
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/,
+      "Password must contain 1 uppercase, 1 number, 1 special character, and be at least 8 characters"
+    ),
 });
 
 export function RegisterSellerModal() {
