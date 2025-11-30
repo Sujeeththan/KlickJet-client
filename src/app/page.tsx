@@ -1,301 +1,96 @@
 "use client";
 
-import { Header } from "@/components/layout/Header";
-import { ProductCard } from "@/features/products/ProductCard";
-import { Input } from "@/components/ui/input";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Search, X } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useState, useMemo } from "react";
+import { Header } from "@/components/layout/Header";
+import { ArrowRight, Store } from "lucide-react";
+import { RegisterSellerModal } from "@/features/auth/RegisterSellerModal";
 
-// Mock data for products
-const products = [
+// Mock data for shops
+const shops = [
   {
     id: 1,
-    title: "Milo",
-    description: "Energy drink",
-    price: 150.00,
-    seller: "sujee store",
-    category: "beverages",
+    name: "Sujee grocery",
+    description: "Your one-stop shop for daily groceries and essentials.",
+    image: "/placeholder-shop.jpg", // We'll use a color block if image fails
+    color: "bg-orange-100 text-orange-700",
   },
   {
     id: 2,
-    title: "Clear shampoo",
-    description: "A gentle shampoo that cleans and nourishes your hair for a soft, fresh feel",
-    price: 450.00,
-    seller: "sujee store",
-    category: "personal-care",
+    name: "Food City",
+    description: "Fresh produce, meats, and bakery items delivered fresh.",
+    image: "/placeholder-shop.jpg",
+    color: "bg-green-100 text-green-700",
   },
   {
     id: 3,
-    title: "Soap",
-    description: "A refreshing soap that gently cleans your skin and leaves it soft and smooth",
-    price: 160.00,
-    seller: "sujee store",
-    category: "personal-care",
+    name: "Keells Super",
+    description: "Premium quality products and international brands.",
+    image: "/placeholder-shop.jpg",
+    color: "bg-red-100 text-red-700",
   },
   {
     id: 4,
-    title: "Soda",
-    description: "Drink",
-    price: 450.00,
-    seller: "sujee store",
-    category: "beverages",
+    name: "Arpico Super",
+    description: "Everything under one roof. Electronics, furniture, and more.",
+    image: "/placeholder-shop.jpg",
+    color: "bg-blue-100 text-blue-700",
   },
-
-  {
-    id:5,
-    title: "Milk",
-    description: "Drink",
-    price: 150.00,
-    seller: "sujee store",
-    category: "beverages",
-  },
-    {
-    id:6,
-    title: "Apple Juice",
-    description: "Fresh Drink",
-    price: 120.00,
-    seller: "sujee store",
-    category: "beverages",
-  },
-
-    {
-    id: 7,
-    title: "Rice 5kg",
-    description: "White raw rice",
-    price: 450.00,
-    seller: "Sujee Store",
-    category: "groceries",
-  },
-
-    {
-    id: 8,
-    title: "Sugar 1kg",
-    description: "Refined sugar",
-    price: 120.00,
-    seller: "Sujee Store",
-    category: "groceries",
-  },
-
-   {
-    id: 9,
-    title: "Sunflower Oil 1L",
-    description: "Cooking oil",
-    price: 190.00,
-    seller: "Sujee Store",
-    category: "groceries",
-  },
-
-    {
-    id: 10,
-    title: "Salt 1kg",
-    description: "Iodized salt",
-    price: 25.00,
-    seller: "Sujee Store",
-    category: "groceries",
-  },
-
-    {
-    id: 11,
-    title: "Tea Powder 250g",
-    description: "Premium tea blend",
-    price: 150.00,
-    seller: "Sujee Store",
-    category: "beverages",
-  },
-
-    {
-    id: 12,
-    title: "Bread",
-    description: "Fresh bakery bread",
-    price: 50.00,
-    seller: "Sujee Store",
-    category: "groceries",
-  },
-
-   {
-    id: 13,
-    title: "Eggs (6 pcs)",
-    description: "Farm eggs",
-    price: 60.00,
-    seller: "Sujee Store",
-    category: "groceries",
-  }
-
 ];
 
-export default function Home() {
-  // State for search input (what user is typing)
-  const [searchInput, setSearchInput] = useState("");
-  // State for active search query (what to actually filter by - only set on Enter)
-  const [searchQuery, setSearchQuery] = useState("");
-  // State for category filter
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  // State for sort option
-  const [sortOption, setSortOption] = useState("newest");
-
-  // Handle Enter key press for search
-  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      setSearchQuery(searchInput);
-    }
-  };
-
-  // Filter and sort products based on independent filters
-  const filteredProducts = useMemo(() => {
-    let result = [...products];
-
-    // Apply search filter (only if searchQuery is set via Enter key)
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (product) =>
-          product.title.toLowerCase().includes(query) ||
-          product.description.toLowerCase().includes(query) ||
-          product.seller.toLowerCase().includes(query)
-      );
-    }
-
-    // Apply category filter (independent of search)
-    if (categoryFilter !== "all") {
-      result = result.filter((product) => product.category === categoryFilter);
-    }
-
-    // Apply sorting (independent of search and category)
-    switch (sortOption) {
-      case "price-low":
-        result.sort((a, b) => a.price - b.price);
-        break;
-      case "price-high":
-        result.sort((a, b) => b.price - a.price);
-        break;
-      case "newest":
-      default:
-        // Keep original order for newest
-        break;
-    }
-
-    return result;
-  }, [searchQuery, categoryFilter, sortOption]);
-
+export default function IntroPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen flex flex-col bg-background">
       <Header />
       
-      <main className="container mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Welcome to Online Store</h1>
-          <p className="text-gray-500">Discover amazing products from trusted sellers</p>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input 
-              placeholder="Search products... (Press Enter to search)" 
-              className="pl-10 pr-10 w-full"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
+      <main className="flex-1 container mx-auto px-4 py-12">
+        <div className="text-center mb-12 space-y-4">
+          <h1 className="text-4xl font-bold tracking-tight">Choose Your Store</h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Select a shop to browse their exclusive products and offers.
+          </p>
+          <div className="flex justify-center">
+             <RegisterSellerModal
+              trigger={
+                <Button variant="outline" className="gap-2">
+                  Want to sell here? Register your shop
+                </Button>
+              }
             />
-            {(searchInput || searchQuery) && (
-              <button
-                onClick={() => {
-                  setSearchInput("");
-                  setSearchQuery("");
-                }}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                aria-label="Clear search"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-          <div className="flex gap-4">
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="All Categories" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="beverages">Beverages</SelectItem>
-                <SelectItem value="groceries">Groceries</SelectItem>
-                <SelectItem value="personal-care">Personal Care</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={sortOption} onValueChange={setSortOption}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Newest" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">Newest</SelectItem>
-                <SelectItem value="price-low">Price: Low to High</SelectItem>
-                <SelectItem value="price-high">Price: High to Low</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </div>
 
-        {/* Results Info */}
-        {searchQuery && (
-          <div className="mb-4 text-sm text-gray-600">
-            Showing {filteredProducts.length} result{filteredProducts.length !== 1 ? 's' : ''} for "{searchQuery}"
-            {filteredProducts.length > 0 && (
-              <button
-                onClick={() => {
-                  setSearchQuery("");
-                  setSearchInput("");
-                }}
-                className="ml-2 text-blue-600 hover:underline"
-              >
-                Clear search
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* Product Grid */}
-        {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                title={product.title}
-                description={product.description}
-                price={product.price}
-                seller={product.seller}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No products found</p>
-            {(searchQuery || categoryFilter !== "all") && (
-              <button
-                onClick={() => {
-                  setSearchQuery("");
-                  setSearchInput("");
-                  setCategoryFilter("all");
-                  setSortOption("newest");
-                }}
-                className="mt-4 text-blue-600 hover:underline"
-              >
-                Clear all filters
-              </button>
-            )}
-          </div>
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          {shops.map((shop) => (
+            <div 
+              key={shop.id} 
+              className="group relative flex flex-col bg-card border rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
+            >
+              {/* Shop Banner / Icon Area */}
+              <div className={`h-32 ${shop.color} flex items-center justify-center`}>
+                <Store className="h-12 w-12 opacity-50" />
+              </div>
+              
+              <div className="p-6 flex flex-col flex-1">
+                <h3 className="text-2xl font-semibold mb-2">{shop.name}</h3>
+                <p className="text-muted-foreground mb-6 flex-1">
+                  {shop.description}
+                </p>
+                
+                <Link href={`/products?seller=${encodeURIComponent(shop.name)}`} className="w-full">
+                  <Button className="w-full gap-2 group-hover:bg-primary/90">
+                    Shop Now <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
       </main>
+      
+      <footer className="py-6 border-t text-center text-sm text-muted-foreground mt-12">
+        © {new Date().getFullYear()} KlickJet. All rights reserved.
+      </footer>
     </div>
   );
 }

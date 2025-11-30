@@ -64,7 +64,11 @@ name: z
     ),
 });
 
-export function RegisterSellerModal() {
+interface RegisterSellerModalProps {
+  trigger?: React.ReactNode;
+}
+
+export function RegisterSellerModal({ trigger }: RegisterSellerModalProps) {
   const [open, setOpen] = useState(false);
   const { register, isLoading } = useAuth();
 
@@ -98,9 +102,11 @@ export function RegisterSellerModal() {
       title="Become a Seller"
       description="Register your shop to start selling. Approval required."
       trigger={
-        <Button variant="ghost" className="text-sm font-medium">
-          Become a Seller
-        </Button>
+        trigger || (
+          <Button variant="ghost" className="text-sm font-medium">
+            Become a Seller
+          </Button>
+        )
       }
       open={open}
       onOpenChange={setOpen}
