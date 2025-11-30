@@ -17,7 +17,7 @@ export default function CartPage() {
   const { user } = useAuth();
   const router = useRouter();
 
-  const deliveryFee = 2.99;
+  const deliveryFee = 300;
   const taxRate = 0.08;
   const subtotal = cartTotal;
   const tax = subtotal * taxRate;
@@ -193,9 +193,11 @@ export default function CartPage() {
                   <span className="font-bold text-xl">Rs. {total.toFixed(2)}</span>
                 </div>
 
-                <Button className="w-full bg-gray-900 text-white hover:bg-gray-800 h-11 text-base font-semibold">
-                  Checkout
-                </Button>
+                <Link href="/checkout">
+                  <Button className="w-full bg-gray-900 text-white hover:bg-gray-800 h-11 text-base font-semibold">
+                    Checkout
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </div>
