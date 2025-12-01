@@ -2,95 +2,129 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Header } from "@/components/layout/Header";
-import { ArrowRight, Store } from "lucide-react";
+import { Footer } from "@/components/layout/Footer";
+import { ArrowRight, Search, Store } from "lucide-react";
 import { RegisterSellerModal } from "@/features/auth/RegisterSellerModal";
+import Image from "next/image";
 
 // Mock data for shops
 const shops = [
   {
     id: 1,
-    name: "Sujee grocery",
-    description: "Your one-stop shop for daily groceries and essentials.",
-    image: "/placeholder-shop.jpg", // We'll use a color block if image fails
-    color: "bg-orange-100 text-orange-700",
+    name: "Sujee Grocery",
+    description: "All home things available",
+    image: "/placeholder-shop.jpg", 
   },
   {
     id: 2,
-    name: "Food City",
-    description: "Fresh produce, meats, and bakery items delivered fresh.",
+    name: "Food city",
+    description: "All home things available",
     image: "/placeholder-shop.jpg",
-    color: "bg-green-100 text-green-700",
   },
   {
     id: 3,
-    name: "Keells Super",
-    description: "Premium quality products and international brands.",
+    name: "Food city",
+    description: "All home things available",
     image: "/placeholder-shop.jpg",
-    color: "bg-red-100 text-red-700",
   },
   {
     id: 4,
-    name: "Arpico Super",
-    description: "Everything under one roof. Electronics, furniture, and more.",
+    name: "Food city",
+    description: "All home things available",
     image: "/placeholder-shop.jpg",
-    color: "bg-blue-100 text-blue-700",
+  },
+  {
+    id: 5,
+    name: "Food city",
+    description: "All home things available",
+    image: "/placeholder-shop.jpg",
+  },
+  {
+    id: 6,
+    name: "Food city",
+    description: "All home things available",
+    image: "/placeholder-shop.jpg",
   },
 ];
 
 export default function IntroPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-white">
       <Header />
       
-      <main className="flex-1 container mx-auto px-4 py-12">
-        <div className="text-center mb-12 space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight">Choose Your Store</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Select a shop to browse their exclusive products and offers.
-          </p>
-          <div className="flex justify-center">
-             <RegisterSellerModal
-              trigger={
-                <Button variant="outline" className="gap-2">
-                  Want to sell here? Register your shop
+      <main className="flex-1">
+        {/* Hero Section */}
+        <div className="bg-gray-50 py-16 md:py-24">
+          <div className="container mx-auto px-4 flex flex-col md:flex-row items-center gap-12">
+            <div className="flex-1 space-y-6">
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 leading-tight">
+                Your Groceries,<br />
+                Delivered in a Click
+              </h1>
+              <p className="text-lg text-gray-500 max-w-lg">
+                Shop from your favourite local stores hassle-free.
+              </p>
+              
+              <div className="flex max-w-md gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input 
+                    placeholder="Search Grocery Shops or Items" 
+                    className="pl-10 bg-white border-gray-200 h-12"
+                  />
+                </div>
+                <Button className="h-12 px-8 bg-black hover:bg-gray-800 text-white">
+                  Search
                 </Button>
-              }
-            />
+              </div>
+            </div>
+
+            <div className="flex-1 flex gap-4 h-[400px]">
+              <div className="flex-1 bg-gray-200 rounded-lg overflow-hidden relative">
+                 {/* Placeholder for left image */}
+                 <div className="absolute inset-0 flex items-center justify-center text-gray-400">Image 1</div>
+              </div>
+              <div className="flex-1 bg-gray-200 rounded-lg overflow-hidden relative mt-8">
+                 {/* Placeholder for right image (staggered) */}
+                 <div className="absolute inset-0 flex items-center justify-center text-gray-400">Image 2</div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {shops.map((shop) => (
-            <div 
-              key={shop.id} 
-              className="group relative flex flex-col bg-card border rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
-            >
-              {/* Shop Banner / Icon Area */}
-              <div className={`h-32 ${shop.color} flex items-center justify-center`}>
-                <Store className="h-12 w-12 opacity-50" />
-              </div>
-              
-              <div className="p-6 flex flex-col flex-1">
-                <h3 className="text-2xl font-semibold mb-2">{shop.name}</h3>
-                <p className="text-muted-foreground mb-6 flex-1">
+        {/* Partner Shops Section */}
+        <div className="container mx-auto px-4 py-16">
+          <h2 className="text-2xl font-bold mb-8 text-gray-900">Our Partner Shops</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {shops.map((shop, index) => (
+              <div 
+                key={index} 
+                className="bg-white border border-gray-200 rounded-lg p-8 flex flex-col items-center text-center hover:shadow-md transition-shadow"
+              >
+                <div className="h-24 w-24 rounded-full bg-gray-300 mb-6 flex items-center justify-center">
+                  {/* Circle Placeholder - using gray for strict monochrome */}
+                </div>
+                
+                <h3 className="text-xl font-bold mb-2 text-gray-900">{shop.name}</h3>
+                <p className="text-sm text-gray-500 mb-8">
                   {shop.description}
                 </p>
                 
                 <Link href={`/products?seller=${encodeURIComponent(shop.name)}`} className="w-full">
-                  <Button className="w-full gap-2 group-hover:bg-primary/90">
-                    Shop Now <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  <Button className="w-full bg-black hover:bg-gray-800 text-white h-10">
+                    Shop Now <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </main>
       
-      <footer className="py-6 border-t text-center text-sm text-muted-foreground mt-12">
-        © {new Date().getFullYear()} KlickJet. All rights reserved.
-      </footer>
+      <Footer />
     </div>
   );
 }

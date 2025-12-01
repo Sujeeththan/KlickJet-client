@@ -37,6 +37,12 @@ export function Header() {
 
         {/* Navigation */}
         <nav className="flex items-center gap-6">
+          <Link 
+            href="/" 
+            className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+          >
+            Shops
+          </Link>
           {user ? (
             <>
               <Link 

@@ -24,7 +24,7 @@ export function ProductCard({ id, title, description, price, seller, image }: Pr
   };
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden h-full flex flex-col">
       <div className="aspect-square relative bg-gray-100 flex items-center justify-center">
         {image ? (
           <Image
@@ -34,30 +34,30 @@ export function ProductCard({ id, title, description, price, seller, image }: Pr
             className="object-cover"
           />
         ) : (
-          <Package className="h-16 w-16 text-gray-400" />
+          <Package className="h-12 w-12 text-gray-400" />
         )}
       </div>
-      <CardContent className="p-4">
-        <h3 className="font-semibold text-lg mb-1">{title}</h3>
-        <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+      <CardContent className="p-3 flex-1">
+        <h3 className="font-semibold text-base mb-1">{title}</h3>
+        <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
           {description}
         </p>
-        <div className="flex items-baseline justify-between mt-4">
-          <span className="text-xl font-bold">Rs. {price.toFixed(2)}</span>
-          <span className="text-xs text-muted-foreground">0</span>
+        <div className="flex items-baseline justify-between mt-2">
+          <span className="text-lg font-bold">Rs. {price.toFixed(2)}</span>
         </div>
-        <p className="text-xs text-muted-foreground mt-1">by {seller}</p>
+        <p className="text-[10px] text-muted-foreground mt-1">by {seller}</p>
       </CardContent>
-      <CardFooter className="p-4 pt-0 flex gap-2">
+      <CardFooter className="p-3 pt-0 flex gap-2">
         <Button 
           onClick={handleAddToCart}
           variant="outline"
-          className="flex-1"
+          size="sm"
+          className="flex-1 text-xs h-8"
         >
           Add to Cart
         </Button>
         <Link href={`/products/${id}`} className="flex-1">
-          <Button className="w-full bg-gray-900 text-white hover:bg-gray-800">
+          <Button size="sm" className="w-full bg-gray-900 text-white hover:bg-gray-800 text-xs h-8">
             View Details
           </Button>
         </Link>
