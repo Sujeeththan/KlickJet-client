@@ -75,7 +75,7 @@ const checkoutSchema = z
       .regex(/^[0-9]{10,15}$/, "Phone number must contain only digits"),
 
     paymentMethod: z.enum(["cod", "online"], {
-      errorMap: () => ({ message: "Payment method is required" }),
+      message: "Payment method is required",
     }),
 
     cardNumber: z.string().optional(),
