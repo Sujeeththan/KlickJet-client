@@ -151,24 +151,27 @@ export default function CheckoutPage() {
 
   const paymentMethod = form.watch("paymentMethod");
 
-  // Redirect non-customers
-  useEffect(() => {
-    if (user && user.role !== "customer") {
-      if (user.role === "seller") router.push("/seller");
-      else if (user.role === "deliverer") router.push("/deliverer");
-      else if (user.role === "admin") router.push("/admin");
-    }
-  }, [user, router]);
-
   // Redirect if cart empty
   useEffect(() => {
     if (items.length === 0) router.push("/cart");
   }, [items, router]);
 
-  if (user && user.role !== "customer") return null;
   if (items.length === 0) return null;
 
   function onSubmit(data: CheckoutFormValues) {
+    // Check if user is logged in
+    if (!user) {
+      toast.error("Please log in to place your order");
+      router.push("/auth/login");
+      return;
+    }
+
+    // Check if user is a customer
+    if (user.role !== "customer") {
+      toast.error("Only customers can place orders");
+      return;
+    }
+
     console.log("Order Data:", data);
     
     // Generate order ID
@@ -486,8 +489,25 @@ export default function CheckoutPage() {
                   </div>
 
                   <Button
-                    type="submit"
+                    type="button"
                     className="w-full bg-gray-900 text-white hover:bg-gray-800 h-11 text-base font-semibold"
+                    onClick={() => {
+                      // Check if user is logged in before validating form
+                      if (!user) {
+                        toast.error("Please log in to place your order");
+                        router.push("/auth/login");
+                        return;
+                      }
+
+                      // Check if user is a customer
+                      if (user.role !== "customer") {
+                        toast.error("Only customers can place orders");
+                        return;
+                      }
+
+                      // If authenticated, trigger form submission
+                      form.handleSubmit(onSubmit)();
+                    }}
                   >
                     Place Order
                   </Button>

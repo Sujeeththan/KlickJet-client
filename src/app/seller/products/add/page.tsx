@@ -2,6 +2,7 @@
 
 import { ProtectedRoute } from "@/features/auth/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
+import { sellerApi } from "@/services/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -119,17 +120,47 @@ export default function AddProductPage() {
     try {
       setLoading(true);
 
-      // TODO: Replace with actual API call
-      // const formDataToSend = new FormData();
-      // formDataToSend.append('name', formData.name);
-      // formDataToSend.append('category', formData.category);
-      // formDataToSend.append('description', formData.description);
-      // formDataToSend.append('price', formData.price);
-      // formDataToSend.append('stock', formData.stock);
-      // images.forEach((image) => {
-      //   formDataToSend.append('images', image);
-      // });
-      // await sellerApi.createProduct(token, formDataToSend);
+      // Upload images first
+      const uploadedImageUrls = [];
+      for (const image of images) {
+        const formData = new FormData();
+        formData.append("file", image);
+        
+        // Convert file to base64 for upload
+        const reader = new FileReader();
+        const base64Promise = new Promise((resolve) => {
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(image);
+        });
+        const base64Data = await base64Promise;
+
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ data: base64Data }),
+        });
+
+        if (!uploadResponse.ok) {
+          const errorData = await uploadResponse.json();
+          throw new Error(errorData.error || errorData.details || "Failed to upload image");
+        }
+
+        const uploadResult = await uploadResponse.json();
+        uploadedImageUrls.push(uploadResult.url);
+      }
+
+      const productData = {
+        name: formData.name,
+        category: formData.category,
+        description: formData.description,
+        price: parseFloat(formData.price),
+        stock: parseInt(formData.stock),
+        images: uploadedImageUrls,
+      };
+
+      await sellerApi.createProduct(user?.token!, productData);
 
       toast({
         title: "Success",
