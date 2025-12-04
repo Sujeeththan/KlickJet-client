@@ -234,24 +234,26 @@ export const sellerApi = {
     return handleResponse<{ success: boolean; products: any[] }>(response);
   },
 
-  async createProduct(token: string, productData: FormData) {
+  async createProduct(token: string, productData: any) {
     const response = await fetch(`${API_BASE_URL}/api/products`, {
       method: 'POST',
       headers: { 
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
-      body: productData,
+      body: JSON.stringify(productData),
     });
     return handleResponse<{ success: boolean; message: string; product: any }>(response);
   },
 
-  async updateProduct(token: string, id: string, productData: FormData) {
+  async updateProduct(token: string, id: string, productData: any) {
     const response = await fetch(`${API_BASE_URL}/api/products/${id}`, {
       method: 'PUT',
       headers: { 
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
-      body: productData,
+      body: JSON.stringify(productData),
     });
     return handleResponse<{ success: boolean; message: string; product: any }>(response);
   },
