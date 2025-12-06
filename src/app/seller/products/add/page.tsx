@@ -26,7 +26,7 @@ interface Category {
 }
 
 export default function AddProductPage() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [categories, setCategories] = useState<Category[]>([]);
@@ -138,6 +138,7 @@ export default function AddProductPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
           },
           body: JSON.stringify({ data: base64Data }),
         });
@@ -160,7 +161,7 @@ export default function AddProductPage() {
         images: uploadedImageUrls,
       };
 
-      await sellerApi.createProduct(user?.token!, productData);
+      await sellerApi.createProduct(token!, productData);
 
       toast({
         title: "Success",
@@ -230,7 +231,7 @@ export default function AddProductPage() {
                       {categories.map((category) => (
                         <SelectItem
                           key={category.id}
-                          value={category.id.toString()}
+                          value={category.name}
                         >
                           {category.name}
                         </SelectItem>

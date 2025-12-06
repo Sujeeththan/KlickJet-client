@@ -1,11 +1,12 @@
-import { AuthResponse, LoginCredentials, RegisterData } from '@/types/auth';
+import { AuthResponse, LoginCredentials, RegisterData } from "@/types/auth";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://klick-jet-api.vercel.app';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 class ApiError extends Error {
   constructor(public message: string, public statusCode: number) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
   }
 }
 
@@ -14,16 +15,16 @@ async function handleResponse<T>(response: Response): Promise<T> {
   try {
     data = await response.json();
   } catch (error) {
-    throw new ApiError('Invalid response from server', response.status);
+    throw new ApiError("Invalid response from server", response.status);
   }
-  
+
   if (!response.ok) {
     throw new ApiError(
-      data.message || data.error || 'An error occurred',
+      data.message || data.error || "An error occurred",
       response.status
     );
   }
-  
+
   return data;
 }
 
@@ -31,22 +32,21 @@ export const authApi = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(credentials),
-        mode: 'cors',
-        credentials: 'omit',
+        credentials: "omit",
       });
-      
+
       return handleResponse<AuthResponse>(response);
     } catch (error) {
       if (error instanceof ApiError) {
         throw error;
       }
       throw new ApiError(
-        'Unable to connect to server. Please check your internet connection.',
+        "Unable to connect to server. Please check your internet connection.",
         0
       );
     }
@@ -55,22 +55,22 @@ export const authApi = {
   async register(data: RegisterData): Promise<AuthResponse> {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
-        mode: 'cors',
-        credentials: 'omit',
+        mode: "cors",
+        credentials: "omit",
       });
-      
+
       return handleResponse<AuthResponse>(response);
     } catch (error) {
       if (error instanceof ApiError) {
         throw error;
       }
       throw new ApiError(
-        'Unable to connect to server. Please check your internet connection.',
+        "Unable to connect to server. Please check your internet connection.",
         0
       );
     }
@@ -79,22 +79,22 @@ export const authApi = {
   async getMe(token: string): Promise<AuthResponse> {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        mode: 'cors',
-        credentials: 'omit',
+        mode: "cors",
+        credentials: "omit",
       });
-      
+
       return handleResponse<AuthResponse>(response);
     } catch (error) {
       if (error instanceof ApiError) {
         throw error;
       }
       throw new ApiError(
-        'Unable to connect to server. Please check your internet connection.',
+        "Unable to connect to server. Please check your internet connection.",
         0
       );
     }
@@ -103,22 +103,22 @@ export const authApi = {
   async logout(token: string): Promise<{ success: boolean; message: string }> {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        mode: 'cors',
-        credentials: 'omit',
+        mode: "cors",
+        credentials: "omit",
       });
-      
+
       return handleResponse<{ success: boolean; message: string }>(response);
     } catch (error) {
       if (error instanceof ApiError) {
         throw error;
       }
       throw new ApiError(
-        'Unable to connect to server. Please check your internet connection.',
+        "Unable to connect to server. Please check your internet connection.",
         0
       );
     }
@@ -141,37 +141,46 @@ export const adminApi = {
   },
 
   async approveSeller(token: string, id: string) {
-    const response = await fetch(`${API_BASE_URL}/api/admin/sellers/${id}/approve`, {
-      method: 'PUT',
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/api/admin/sellers/${id}/approve`,
+      {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     return handleResponse<{ success: boolean; message: string }>(response);
   },
 
   async rejectSeller(token: string, id: string, rejectionReason: string) {
-    const response = await fetch(`${API_BASE_URL}/api/admin/sellers/${id}/reject`, {
-      method: 'PUT',
-      headers: { 
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ rejectionReason }),
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/api/admin/sellers/${id}/reject`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rejectionReason }),
+      }
+    );
     return handleResponse<{ success: boolean; message: string }>(response);
   },
 
   async deleteSeller(token: string, id: string) {
     const response = await fetch(`${API_BASE_URL}/api/admin/sellers/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
     return handleResponse<{ success: boolean; message: string }>(response);
   },
 
   async getPendingDeliverers(token: string) {
-    const response = await fetch(`${API_BASE_URL}/api/admin/deliverers/pending`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/api/admin/deliverers/pending`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     return handleResponse<{ success: boolean; deliverers: any[] }>(response);
   },
 
@@ -183,28 +192,34 @@ export const adminApi = {
   },
 
   async approveDeliverer(token: string, id: string) {
-    const response = await fetch(`${API_BASE_URL}/api/admin/deliverers/${id}/approve`, {
-      method: 'PUT',
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/api/admin/deliverers/${id}/approve`,
+      {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     return handleResponse<{ success: boolean; message: string }>(response);
   },
 
   async rejectDeliverer(token: string, id: string, rejectionReason: string) {
-    const response = await fetch(`${API_BASE_URL}/api/admin/deliverers/${id}/reject`, {
-      method: 'PUT',
-      headers: { 
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ rejectionReason }),
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/api/admin/deliverers/${id}/reject`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rejectionReason }),
+      }
+    );
     return handleResponse<{ success: boolean; message: string }>(response);
   },
 
   async deleteDeliverer(token: string, id: string) {
     const response = await fetch(`${API_BASE_URL}/api/admin/deliverers/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
     return handleResponse<{ success: boolean; message: string }>(response);
@@ -214,12 +229,14 @@ export const adminApi = {
     const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return handleResponse<{ success: boolean; users: any[]; count: number }>(response);
+    return handleResponse<{ success: boolean; users: any[]; count: number }>(
+      response
+    );
   },
 
   async deleteUser(token: string, id: string) {
     const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
     return handleResponse<{ success: boolean; message: string }>(response);
@@ -236,31 +253,35 @@ export const sellerApi = {
 
   async createProduct(token: string, productData: any) {
     const response = await fetch(`${API_BASE_URL}/api/products`, {
-      method: 'POST',
-      headers: { 
+      method: "POST",
+      headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(productData),
     });
-    return handleResponse<{ success: boolean; message: string; product: any }>(response);
+    return handleResponse<{ success: boolean; message: string; product: any }>(
+      response
+    );
   },
 
   async updateProduct(token: string, id: string, productData: any) {
     const response = await fetch(`${API_BASE_URL}/api/products/${id}`, {
-      method: 'PUT',
-      headers: { 
+      method: "PUT",
+      headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(productData),
     });
-    return handleResponse<{ success: boolean; message: string; product: any }>(response);
+    return handleResponse<{ success: boolean; message: string; product: any }>(
+      response
+    );
   },
 
   async deleteProduct(token: string, id: string) {
     const response = await fetch(`${API_BASE_URL}/api/products/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
     return handleResponse<{ success: boolean; message: string }>(response);
@@ -282,10 +303,10 @@ export const sellerApi = {
 
   async updateOrderStatus(token: string, id: string, status: string) {
     const response = await fetch(`${API_BASE_URL}/api/orders/${id}`, {
-      method: 'PUT',
-      headers: { 
+      method: "PUT",
+      headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ status }),
     });
@@ -296,14 +317,14 @@ export const sellerApi = {
     const response = await fetch(`${API_BASE_URL}/api/seller/stats`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return handleResponse<{ 
-      success: boolean; 
+    return handleResponse<{
+      success: boolean;
       stats: {
         totalProducts: number;
         totalOrders: number;
         totalSales: number;
         pendingOrders: number;
-      }
+      };
     }>(response);
   },
 };
@@ -312,6 +333,63 @@ export const categoriesApi = {
   async getCategories() {
     const response = await fetch(`${API_BASE_URL}/api/categories`);
     return handleResponse<{ success: boolean; categories: any[] }>(response);
+  },
+};
+
+export const cartApi = {
+  async getCart(token: string) {
+    const response = await fetch(`${API_BASE_URL}/api/cart`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse<{ success: boolean; cart: any }>(response);
+  },
+
+  async addToCart(token: string, productId: string, quantity: number = 1) {
+    const response = await fetch(`${API_BASE_URL}/api/cart`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ productId, quantity }),
+    });
+    return handleResponse<{ success: boolean; message: string; cart: any }>(
+      response
+    );
+  },
+
+  async updateCartItem(token: string, itemId: string, quantity: number) {
+    const response = await fetch(`${API_BASE_URL}/api/cart/${itemId}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ quantity }),
+    });
+    return handleResponse<{ success: boolean; message: string; cart: any }>(
+      response
+    );
+  },
+
+  async removeFromCart(token: string, itemId: string) {
+    const response = await fetch(`${API_BASE_URL}/api/cart/${itemId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse<{ success: boolean; message: string; cart: any }>(
+      response
+    );
+  },
+
+  async clearCart(token: string) {
+    const response = await fetch(`${API_BASE_URL}/api/cart`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse<{ success: boolean; message: string; cart: any }>(
+      response
+    );
   },
 };
 

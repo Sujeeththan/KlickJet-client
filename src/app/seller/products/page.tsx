@@ -64,7 +64,7 @@ interface Category {
 }
 
 export default function ProductsPage() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { toast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -93,7 +93,7 @@ export default function ProductsPage() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await sellerApi.getSellerProducts(user?.token!);
+      const response = await sellerApi.getSellerProducts(token!);
       setProducts(response.products || []);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -213,7 +213,7 @@ export default function ProductsPage() {
         images: [], // Empty array until image upload is implemented
       };
 
-      await sellerApi.createProduct(user?.token!, productData);
+      await sellerApi.createProduct(token!, productData);
 
       toast({
         title: "Success",
@@ -269,7 +269,7 @@ export default function ProductsPage() {
         images: existingImages, // Only keep existing images until upload is implemented
       };
 
-      await sellerApi.updateProduct(user?.token!, selectedProduct._id, productData);
+      await sellerApi.updateProduct(token!, selectedProduct._id, productData);
 
       toast({
         title: "Success",
@@ -302,7 +302,7 @@ export default function ProductsPage() {
 
     try {
       setSubmitting(true);
-      await sellerApi.deleteProduct(user?.token!, selectedProduct._id);
+      await sellerApi.deleteProduct(token!, selectedProduct._id);
 
       toast({
         title: "Success",
