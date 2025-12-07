@@ -91,8 +91,10 @@ export default function RegisterSellerPage() {
         role: "seller",
       });
       
-      if (response.token && response.user) {
-        await login(response.token, response.user);
+      if (response.user) {
+        const { toast } = await import("sonner");
+        toast.success("Registered successfully, please wait for admin approval");
+        router.push("/auth/login");
       }
     } catch (error: any) {
       const { toast } = await import("sonner");
