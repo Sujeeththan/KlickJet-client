@@ -6,9 +6,10 @@ export interface Product {
     category: string | { _id: string; name: string }; // Can be string ID or populated object
     image?: string;
     images?: string[]; // Multiple images support
+    mainImageIndex?: number;
     stock: number;
     instock: number; // Alias for stock, used by seller pages
-    seller: string; // or ObjectId
+    seller: string | { _id: string; name: string; shopName?: string }; // Can be string ID or populated object
     isActive: boolean;
     createdAt?: string;
     updatedAt?: string;

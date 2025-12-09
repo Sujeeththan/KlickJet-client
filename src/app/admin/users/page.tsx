@@ -59,7 +59,21 @@ export default function UsersPage() {
     if (roleFilter === "all") {
       setFilteredUsers(allUsers);
     } else {
-      setFilteredUsers(allUsers.filter(user => user.role === roleFilter));
+      setFilteredUsers(
+        allUsers.filter((user) => {
+          const uRole = (user.role || "").toLowerCase();
+          const uType = (user.type || "").toLowerCase();
+          const filter = roleFilter.toLowerCase();
+          
+          // Direct match
+          if (uRole === filter || uType === filter) return true;
+          
+          // Map 'user' to 'customer' if that's how backend returns it
+          if (filter === 'customer' && (uRole === 'user' || uType === 'user')) return true;
+          
+          return false;
+        })
+      );
     }
     setCurrentPage(1);
   };
@@ -69,13 +83,19 @@ export default function UsersPage() {
     switch (status.toLowerCase()) {
       case "approved":
       case "active":
-        return <Badge className="bg-green-500 hover:bg-green-600">Active</Badge>;
+        return (
+          <Badge className="bg-green-500 hover:bg-green-600">Active</Badge>
+        );
       case "pending":
-        return <Badge className="bg-yellow-500 hover:bg-yellow-600">Pending</Badge>;
+        return (
+          <Badge className="bg-yellow-500 hover:bg-yellow-600">Pending</Badge>
+        );
       case "rejected":
         return <Badge className="bg-red-500 hover:bg-red-600">Rejected</Badge>;
       case "inactive":
-        return <Badge className="bg-gray-500 hover:bg-gray-600">Inactive</Badge>;
+        return (
+          <Badge className="bg-gray-500 hover:bg-gray-600">Inactive</Badge>
+        );
       default:
         return <Badge>{status}</Badge>;
     }
@@ -118,9 +138,7 @@ export default function UsersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Users</h2>
-          <p className="text-muted-foreground">
-            View all users in the system
-          </p>
+          <p className="text-muted-foreground">View all users in the system</p>
         </div>
         <Select value={roleFilter} onValueChange={setRoleFilter}>
           <SelectTrigger className="w-[180px]">
@@ -162,17 +180,20 @@ export default function UsersPage() {
                     {currentUsers.length > 0 ? (
                       currentUsers.map((user) => (
                         <TableRow key={user._id}>
-                          <TableCell className="font-medium">{user.email}</TableCell>
+                          <TableCell className="font-medium">
+                            {user.email}
+                          </TableCell>
                           <TableCell>{user.shopName || user.name}</TableCell>
                           <TableCell>{getRoleBadge(user.role)}</TableCell>
                           <TableCell>
                             <div className="flex flex-col gap-1">
                               {getStatusBadge(user.status)}
-                              {user.status === "rejected" && user.rejectionReason && (
-                                <span className="text-xs text-muted-foreground">
-                                  Reason: {user.rejectionReason}
-                                </span>
-                              )}
+                              {user.status === "rejected" &&
+                                user.rejectionReason && (
+                                  <span className="text-xs text-muted-foreground">
+                                    Reason: {user.rejectionReason}
+                                  </span>
+                                )}
                             </div>
                           </TableCell>
                           <TableCell>
@@ -182,7 +203,10 @@ export default function UsersPage() {
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                        <TableCell
+                          colSpan={5}
+                          className="text-center py-8 text-muted-foreground"
+                        >
                           No users found
                         </TableCell>
                       </TableRow>
@@ -195,7 +219,8 @@ export default function UsersPage() {
               {totalPages > 1 && (
                 <div className="flex items-center justify-between mt-4">
                   <p className="text-sm text-muted-foreground">
-                    Showing {startIndex + 1} to {Math.min(endIndex, filteredUsers.length)} of{" "}
+                    Showing {startIndex + 1} to{" "}
+                    {Math.min(endIndex, filteredUsers.length)} of{" "}
                     {filteredUsers.length} users
                   </p>
                   <div className="flex gap-2">

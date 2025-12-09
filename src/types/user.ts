@@ -1,4 +1,4 @@
-export type UserRole = 'public' | 'customer' | 'seller' | 'deliverer' | 'admin';
+export type UserRole = "public" | "customer" | "seller" | "deliverer" | "admin";
 
 export interface User {
   id: string;
@@ -6,12 +6,13 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  type?: "customer" | "seller" | "deliverer"; // Type field from admin/users endpoint
   phone_no?: string;
   address?: string;
   shopName?: string;
   vehicle_no?: string;
   vehicle_type?: string;
-  status?: 'pending' | 'approved' | 'rejected';
+  status?: "pending" | "approved" | "rejected" | "active" | "inactive";
   isActive?: boolean;
   rejectionReason?: string;
   createdAt: string; // ISO date string from backend

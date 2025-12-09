@@ -2,130 +2,57 @@
 
 import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Package, ShoppingCart } from "lucide-react";
+import { ArrowLeft, Package, ShoppingCart, Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
-
-// Mock data for products (same as in products page)
-const products = [
-  {
-    id: 1,
-    title: "Milo",
-    description: "Energy drink",
-    price: 150.00,
-    seller: "Sujee grocery",
-    category: "beverages",
-  },
-  {
-    id: 2,
-    title: "Clear shampoo",
-    description: "A gentle shampoo that cleans and nourishes your hair for a soft, fresh feel",
-    price: 450.00,
-    seller: "Sujee grocery",
-    category: "personal-care",
-  },
-  {
-    id: 3,
-    title: "Soap",
-    description: "A refreshing soap that gently cleans your skin and leaves it soft and smooth",
-    price: 160.00,
-    seller: "Sujee grocery",
-    category: "personal-care",
-  },
-  {
-    id: 4,
-    title: "Soda",
-    description: "Drink",
-    price: 450.00,
-    seller: "Sujee grocery",
-    category: "beverages",
-  },
-  {
-    id:5,
-    title: "Milk",
-    description: "Drink",
-    price: 150.00,
-    seller: "Sujee grocery",
-    category: "beverages",
-  },
-  {
-    id:6,
-    title: "Apple Juice",
-    description: "Fresh Drink",
-    price: 120.00,
-    seller: "Sujee grocery",
-    category: "beverages",
-  },
-  {
-    id: 7,
-    title: "Rice 5kg",
-    description: "White raw rice",
-    price: 450.00,
-    seller: "Sujee grocery",
-    category: "groceries",
-  },
-  {
-    id: 8,
-    title: "Sugar 1kg",
-    description: "Refined sugar",
-    price: 120.00,
-    seller: "Sujee grocery",
-    category: "groceries",
-  },
-  {
-    id: 9,
-    title: "Sunflower Oil 1L",
-    description: "Cooking oil",
-    price: 190.00,
-    seller: "Sujee grocery",
-    category: "groceries",
-  },
-  {
-    id: 10,
-    title: "Salt 1kg",
-    description: "Iodized salt",
-    price: 25.00,
-    seller: "Sujee grocery",
-    category: "groceries",
-  },
-  {
-    id: 11,
-    title: "Tea Powder 250g",
-    description: "Premium tea blend",
-    price: 150.00,
-    seller: "Sujee grocery",
-    category: "beverages",
-  },
-  {
-    id: 12,
-    title: "Bread",
-    description: "Fresh bakery bread",
-    price: 50.00,
-    seller: "Sujee grocery",
-    category: "groceries",
-  },
-  {
-    id: 13,
-    title: "Eggs (6 pcs)",
-    description: "Farm eggs",
-    price: 60.00,
-    seller: "Sujee grocery",
-    category: "groceries",
-  }
-];
+import { productService } from "@/services/product.service";
+import { Product } from "@/types/product";
+import { toast } from "sonner";
 
 export default function ProductDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
 
-  const productId = parseInt(params.id as string);
-  const product = products.find((p) => p.id === productId);
+  const productId = params.id as string;
+
+  useEffect(() => {
+    fetchProduct();
+  }, [productId]);
+
+  const fetchProduct = async () => {
+    try {
+      setLoading(true);
+      const response = await productService.getById(productId);
+      setProduct(response.product);
+    } catch (error: any) {
+      console.error("Error fetching product:", error);
+      toast.error(error.message || "Failed to fetch product");
+      setProduct(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <main className="container mx-auto px-4 py-8">
+          <div className="flex justify-center items-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -150,19 +77,52 @@ export default function ProductDetailsPage() {
     );
   }
 
+  // Get seller name from populated seller_id or use seller field
+  const sellerName =
+    typeof product.seller === "object" && product.seller?.shopName
+      ? product.seller.shopName
+      : typeof product.seller === "object" && product.seller?.name
+      ? product.seller.name
+      : typeof product.seller === "string"
+      ? product.seller
+      : "Unknown Seller";
+
+  // Get category
+  const category =
+    typeof product.category === "string"
+      ? product.category
+      : product.category?.name || "";
+
+  // Get main image
+  const mainImage =
+    product.images && product.images.length > 0
+      ? product.images[product.mainImageIndex || 0]
+      : product.image || "/placeholder.png";
+
   const handleAddToCart = () => {
-    addToCart(product, quantity);
+    addToCart(
+      {
+        id: product._id,
+        title: product.name,
+        description: product.description,
+        price: product.price,
+        seller: sellerName,
+        image: mainImage,
+      },
+      quantity
+    );
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2000);
   };
 
   const incrementQuantity = () => setQuantity((prev) => prev + 1);
-  const decrementQuantity = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+  const decrementQuantity = () =>
+    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      
+
       <main className="container mx-auto px-4 py-8">
         {/* Back Button */}
         <Link href="/products">
@@ -176,28 +136,37 @@ export default function ProductDetailsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
           {/* Product Image */}
           <div className="aspect-square relative bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
-            <Package className="h-32 w-32 text-gray-400" />
+            {mainImage && mainImage !== "/placeholder.png" ? (
+              <Image
+                src={mainImage}
+                alt={product.name}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <Package className="h-32 w-32 text-gray-400" />
+            )}
           </div>
 
           {/* Product Info */}
           <div className="flex flex-col">
             <div className="mb-2">
               <span className="inline-block px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full capitalize">
-                {product.category.replace("-", " ")}
+                {category.replace("-", " ")}
               </span>
             </div>
-            
+
             <h1 className="text-3xl md:text-4xl font-bold mb-4">
-              {product.title}
+              {product.name}
             </h1>
-            
+
             <p className="text-gray-600 mb-6 text-lg">
-              {product.description}
+              {product.description || "No description available"}
             </p>
 
             <div className="mb-6">
               <p className="text-sm text-gray-500 mb-1">Sold by</p>
-              <p className="text-lg font-semibold">{product.seller}</p>
+              <p className="text-lg font-semibold">{sellerName}</p>
             </div>
 
             <div className="mb-8">
@@ -251,7 +220,7 @@ export default function ProductDetailsPage() {
                   </>
                 )}
               </Button>
-              
+
               <p className="text-sm text-gray-500 text-center">
                 Total: Rs. {(product.price * quantity).toFixed(2)}
               </p>
@@ -263,17 +232,33 @@ export default function ProductDetailsPage() {
               <div className="space-y-2 text-sm text-gray-600">
                 <div className="flex justify-between">
                   <span>Product ID:</span>
-                  <span className="font-medium">#{product.id}</span>
+                  <span className="font-medium">#{product._id.slice(-8)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Category:</span>
                   <span className="font-medium capitalize">
-                    {product.category.replace("-", " ")}
+                    {category.replace("-", " ")}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Stock:</span>
+                  <span className="font-medium">
+                    {product.stock || product.instock || 0} units
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Availability:</span>
-                  <span className="font-medium text-green-600">In Stock</span>
+                  <span
+                    className={`font-medium ${
+                      (product.stock || product.instock || 0) > 0
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {(product.stock || product.instock || 0) > 0
+                      ? "In Stock"
+                      : "Out of Stock"}
+                  </span>
                 </div>
               </div>
             </div>
