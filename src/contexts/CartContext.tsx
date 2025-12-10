@@ -115,6 +115,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const addToCart = async (product: Omit<CartItem, "quantity">, quantity: number = 1) => {
+    // Check if product already exists in cart
+    const existingItem = items.find((item) => item.id === product.id);
+    
+    if (existingItem) {
+      toast.error("This product is already added");
+      return;
+    }
+
     if (isAuthenticated) {
       // Add to backend for authenticated users
       try {
@@ -132,21 +140,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
     } else {
       // Add to localStorage for guest users
-      setItems((prevItems) => {
-        const existingItem = prevItems.find((item) => item.id === product.id);
-        
-        if (existingItem) {
-          toast.success(`Updated ${product.title} quantity in cart`);
-          return prevItems.map((item) =>
-            item.id === product.id
-              ? { ...item, quantity: item.quantity + quantity }
-              : item
-          );
-        } else {
-          toast.success(`${product.title} added to cart`);
-          return [...prevItems, { ...product, quantity }];
-        }
-      });
+      toast.success(`${product.title} added to cart`);
+      setItems((prevItems) => [...prevItems, { ...product, quantity }]);
     }
   };
 
