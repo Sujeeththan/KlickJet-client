@@ -53,7 +53,7 @@ export default function CartPage() {
               Add some products to get started!
             </p>
             <Link href="/products">
-              <Button className="text-white hover:bg-gray-800">
+              <Button className="text-white ">
                 Continue Shopping
               </Button>
             </Link>
@@ -203,9 +203,9 @@ export default function CartPage() {
                   </span>
                 </div>
 
-                <Link href="/checkout">
+                <Link href="/checkout/shipping">
                   <Button className="w-full bg-gray-900 text-white hover:bg-gray-800 h-11 text-base font-semibold">
-                    Checkout
+                    Proceed to Checkout
                   </Button>
                 </Link>
               </CardContent>
