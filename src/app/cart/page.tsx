@@ -53,7 +53,7 @@ export default function CartPage() {
               Add some products to get started!
             </p>
             <Link href="/products">
-              <Button className="bg-gray-900 text-white hover:bg-gray-800">
+              <Button className="text-white hover:bg-gray-800">
                 Continue Shopping
               </Button>
             </Link>
@@ -66,7 +66,7 @@ export default function CartPage() {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      
+
       <main className="container mx-auto px-4 py-8 max-w-5xl">
         {/* Header with Back Button */}
         <div className="flex items-center gap-2 mb-8">
@@ -125,7 +125,9 @@ export default function CartPage() {
                               variant="outline"
                               size="icon"
                               className="h-8 w-8 rounded"
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              onClick={() =>
+                                updateQuantity(item.id, item.quantity - 1)
+                              }
                             >
                               <Minus className="h-3 w-3" />
                             </Button>
@@ -136,7 +138,9 @@ export default function CartPage() {
                               variant="outline"
                               size="icon"
                               className="h-8 w-8 rounded"
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              onClick={() =>
+                                updateQuantity(item.id, item.quantity + 1)
+                              }
                             >
                               <Plus className="h-3 w-3" />
                             </Button>
@@ -174,11 +178,15 @@ export default function CartPage() {
                 <div className="space-y-3 mb-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span className="font-medium">LKR {subtotal.toFixed(2)}</span>
+                    <span className="font-medium">
+                      LKR {subtotal.toFixed(2)}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Delivery Fee</span>
-                    <span className="font-medium">LKR {deliveryFee.toFixed(2)}</span>
+                    <span className="font-medium">
+                      LKR {deliveryFee.toFixed(2)}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Tax (8%)</span>
@@ -190,7 +198,9 @@ export default function CartPage() {
 
                 <div className="flex justify-between mb-6">
                   <span className="font-semibold text-lg">Total</span>
-                  <span className="font-bold text-xl">LKR {total.toFixed(2)}</span>
+                  <span className="font-bold text-xl">
+                    LKR {total.toFixed(2)}
+                  </span>
                 </div>
 
                 <Link href="/checkout">

@@ -170,7 +170,7 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-black hover:bg-gray-800"
+                className="w-full"
                 disabled={loading || isSubmitting}
               >
                 {(loading || isSubmitting) && (

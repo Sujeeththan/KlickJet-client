@@ -89,16 +89,15 @@ export default function IntroPage() {
       <Header />
 
       <main className="flex-1">
-        {/* Hero Section */}
-        <div className="bg-gray-50 py-16 md:py-24">
+        <div className="bg-surface-primary py-16 md:py-24">
           <div className="container mx-auto px-4 flex flex-col md:flex-row items-center gap-12">
             <div className="flex-1 space-y-6">
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 leading-tight">
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-secondary leading-tight">
                 Your Groceries,
                 <br />
                 Delivered in a Click
               </h1>
-              <p className="text-lg text-gray-500 max-w-lg">
+              <p className="text-lg text-muted-foreground max-w-lg">
                 Shop from your favourite local stores hassle-free.
               </p>
 
@@ -108,9 +107,9 @@ export default function IntroPage() {
                     value={selectedLocation}
                     onValueChange={setSelectedLocation}
                   >
-                    <SelectTrigger className="site-select-trigger h-12 w-full bg-white border-gray-200">
+                    <SelectTrigger className="site-select-trigger h-12 w-full bg-card border-border">
                       <div className="flex items-center gap-2">
-                        <Store className="h-4 w-4 text-gray-500" />
+                        <Store className="h-4 w-4 text-muted-foreground" />
                         <SelectValue placeholder="Select your location" />
                       </div>
                     </SelectTrigger>
@@ -125,7 +124,7 @@ export default function IntroPage() {
                   </Select>
                 </div>
               </div>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-muted-foreground/70">
                 Select your area to see nearby shops
               </p>
             </div>
@@ -185,20 +184,20 @@ export default function IntroPage() {
                       key={shop._id}
                       className="bg-white border border-gray-200 rounded-lg p-8 flex flex-col items-center text-center hover:shadow-md transition-shadow"
                     >
-                      <div className="h-24 w-24 rounded-full bg-gray-300 mb-6 flex items-center justify-center">
-                        <Store className="h-8 w-8 text-gray-500" />
+                      <div className="h-24 w-24 rounded-full bg-muted mb-6 flex items-center justify-center">
+                        <Store className="h-8 w-8 text-muted-foreground" />
                       </div>
 
-                      <h3 className="text-xl font-bold mb-1 text-gray-900">
+                      <h3 className="text-xl font-bold mb-1 text-foreground">
                         {shop.shopName}
                       </h3>
-                      <div className="flex items-center gap-1 mb-2 text-sm text-gray-500">
-                        <span className="bg-gray-100 px-2 py-0.5 rounded text-xs font-medium text-gray-600">
+                      <div className="flex items-center gap-1 mb-2 text-sm text-muted-foreground">
+                        <span className="bg-muted px-2 py-0.5 rounded text-xs font-medium text-muted-foreground">
                           {shopLocation}
                         </span>
                       </div>
 
-                      <p className="text-sm text-gray-500 mb-8">
+                      <p className="text-sm text-muted-foreground mb-8">
                         {shop.address || "Quality products available"}
                       </p>
 
@@ -206,7 +205,7 @@ export default function IntroPage() {
                         href={`/products?seller_id=${shop._id}`}
                         className="w-full"
                       >
-                        <Button className="w-full bg-black hover:bg-gray-800 text-white h-10">
+                        <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-10">
                           Shop Now <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                       </Link>
@@ -215,12 +214,12 @@ export default function IntroPage() {
                 })}
               </div>
             ) : (
-              <div className="text-center py-20 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                <Store className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900">
+              <div className="text-center py-20 bg-surface-primary rounded-lg border border-dashed border-border">
+                <Store className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground">
                   No shops found
                 </h3>
-                <p className="text-gray-500 mt-2">
+                <p className="text-muted-foreground mt-2">
                   {selectedLocation !== "all"
                     ? "Try selecting a different location"
                     : "No approved shops available yet"}

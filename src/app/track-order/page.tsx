@@ -51,11 +51,11 @@ export default function TrackOrderPage() {
   // Show loading state while checking for order data
   if (!orderData) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-surface-primary">
         <Header />
         <main className="container mx-auto px-4 py-8 max-w-6xl">
           <div className="text-center py-12">
-            <p className="text-gray-500">Loading order details...</p>
+            <p className="text-muted-foreground">Loading order details...</p>
           </div>
         </main>
       </div>
@@ -63,13 +63,13 @@ export default function TrackOrderPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-surface-primary">
       <Header />
 
       <main className="container mx-auto px-4 py-8 max-w-6xl">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold">Track Your Order</h1>
-          <div className="bg-gray-900 text-white px-4 py-2 rounded-full text-sm font-medium">
+          <div className="bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium">
             On the way
           </div>
         </div>
@@ -78,7 +78,7 @@ export default function TrackOrderPage() {
           {/* Left Column: Map & Status */}
           <div className="lg:col-span-2 space-y-6">
             <Card className="overflow-hidden">
-              <div className="relative h-[400px] w-full bg-gray-100">
+              <div className="relative h-[400px] w-full bg-muted">
                 <iframe
                   src={`https://maps.google.com/maps?q=${encodeURIComponent(orderData.deliveryAddress)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
                   width="100%"
@@ -91,12 +91,12 @@ export default function TrackOrderPage() {
                 
                 {/* Overlay Card */}
                 <div className="absolute bottom-4 left-4 right-4 bg-white p-4 rounded-lg shadow-lg flex items-center gap-4">
-                  <div className="bg-gray-100 p-3 rounded-full">
-                    <MapPin className="h-6 w-6 text-gray-900" />
+                  <div className="bg-muted p-3 rounded-full">
+                    <MapPin className="h-6 w-6 text-foreground" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Delivering to:</p>
-                    <p className="font-semibold text-gray-900">{orderData.deliveryAddress}</p>
+                    <p className="text-sm text-muted-foreground">Delivering to:</p>
+                    <p className="font-semibold text-foreground">{orderData.deliveryAddress}</p>
                   </div>
                 </div>
               </div>

@@ -208,7 +208,7 @@ export default function AddProductPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="category">
-                    Category <span className="text-red-500">*</span>
+                    Category <span className="text-destructive">*</span>
                   </Label>
                   <Select
                     value={formData.category}
@@ -315,13 +315,13 @@ export default function AddProductPage() {
                             alt={`Preview ${index + 1}`}
                             className="w-full h-24 object-cover rounded-md"
                           />
-                          <button
+                          <Button
                             type="button"
                             onClick={() => removeImage(index)}
-                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             <X className="h-4 w-4" />
-                          </button>
+                          </Button>
                         </div>
                       ))}
                     </div>

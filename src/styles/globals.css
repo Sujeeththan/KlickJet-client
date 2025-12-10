@@ -25,6 +25,7 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -37,6 +38,39 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-error: var(--error);
+  --color-error-foreground: var(--error-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-status-delivered: var(--status-delivered);
+  --color-status-delivered-foreground: var(--status-delivered-foreground);
+  --color-status-pending: var(--status-pending);
+  --color-status-pending-foreground: var(--status-pending-foreground);
+  --color-status-shipped: var(--status-shipped);
+  --color-status-shipped-foreground: var(--status-shipped-foreground);
+  --color-status-processing: var(--status-processing);
+  --color-status-processing-foreground: var(--status-processing-foreground);
+  --color-status-cancelled: var(--status-cancelled);
+  --color-status-cancelled-foreground: var(--status-cancelled-foreground);
+  --color-status-approved: var(--status-approved);
+  --color-status-approved-foreground: var(--status-approved-foreground);
+  --color-status-rejected: var(--status-rejected);
+  --color-status-rejected-foreground: var(--status-rejected-foreground);
+  --color-status-active: var(--status-active);
+  --color-status-active-foreground: var(--status-active-foreground);
+  --color-status-inactive: var(--status-inactive);
+  --color-status-inactive-foreground: var(--status-inactive-foreground);
+  --color-surface-primary: var(--surface-primary);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-border-light: var(--border-light);
+  --color-border-medium: var(--border-medium);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -53,13 +87,14 @@
   --popover-foreground: #1a1a1a;
   --primary: #0e544e;
   --primary-foreground: #ffffff;
-  --secondary: #ca9d74;
+  --secondary: #b47e44c0;
   --secondary-foreground: #ffffff;
   --muted: #f4f4f5;
   --muted-foreground: #71717a;
   --accent: #f4f4f5;
   --accent-foreground: #1a1a1a;
   --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
   --border: #e4e4e7;
   --input: #e4e4e7;
   --ring: #0e544e;
@@ -76,6 +111,45 @@
   --sidebar-accent-foreground: #1a1a1a;
   --sidebar-border: #e4e4e7;
   --sidebar-ring: #0e544e;
+  
+  /* Semantic Colors */
+  --success: #22c55e;
+  --success-foreground: #ffffff;
+  --warning: #f59e0b;
+  --warning-foreground: #ffffff;
+  --error: #ef4444;
+  --error-foreground: #ffffff;
+  --info: #3b82f6;
+  --info-foreground: #ffffff;
+  
+  /* Status-Specific Colors */
+  --status-delivered: #22c55e;
+  --status-delivered-foreground: #ffffff;
+  --status-pending: #f59e0b;
+  --status-pending-foreground: #ffffff;
+  --status-shipped: #a855f7;
+  --status-shipped-foreground: #ffffff;
+  --status-processing: #3b82f6;
+  --status-processing-foreground: #ffffff;
+  --status-cancelled: #ef4444;
+  --status-cancelled-foreground: #ffffff;
+  --status-approved: #22c55e;
+  --status-approved-foreground: #ffffff;
+  --status-rejected: #ef4444;
+  --status-rejected-foreground: #ffffff;
+  --status-active: #22c55e;
+  --status-active-foreground: #ffffff;
+  --status-inactive: #6b7280;
+  --status-inactive-foreground: #ffffff;
+  
+  /* Surface & UI Colors */
+  --surface-primary: #f9fafb;
+  --surface-secondary: #f3f4f6;
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  --border-light: #e5e7eb;
+  --border-medium: #d1d5db;
 }
 
 .dark {
@@ -94,6 +168,7 @@
   --accent: oklch(0.278 0.033 256.848);
   --accent-foreground: oklch(0.985 0.002 247.839);
   --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0.002 247.839);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.551 0.027 264.364);
@@ -110,6 +185,45 @@
   --sidebar-accent-foreground: oklch(0.985 0.002 247.839);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
+  
+  /* Semantic Colors - Dark Mode */
+  --success: oklch(0.7 0.2 145);
+  --success-foreground: oklch(0.13 0.028 261.692);
+  --warning: oklch(0.75 0.18 75);
+  --warning-foreground: oklch(0.13 0.028 261.692);
+  --error: oklch(0.704 0.191 22.216);
+  --error-foreground: oklch(0.985 0.002 247.839);
+  --info: oklch(0.65 0.2 250);
+  --info-foreground: oklch(0.985 0.002 247.839);
+  
+  /* Status-Specific Colors - Dark Mode */
+  --status-delivered: oklch(0.7 0.2 145);
+  --status-delivered-foreground: oklch(0.13 0.028 261.692);
+  --status-pending: oklch(0.75 0.18 75);
+  --status-pending-foreground: oklch(0.13 0.028 261.692);
+  --status-shipped: oklch(0.7 0.25 300);
+  --status-shipped-foreground: oklch(0.985 0.002 247.839);
+  --status-processing: oklch(0.65 0.2 250);
+  --status-processing-foreground: oklch(0.985 0.002 247.839);
+  --status-cancelled: oklch(0.704 0.191 22.216);
+  --status-cancelled-foreground: oklch(0.985 0.002 247.839);
+  --status-approved: oklch(0.7 0.2 145);
+  --status-approved-foreground: oklch(0.13 0.028 261.692);
+  --status-rejected: oklch(0.704 0.191 22.216);
+  --status-rejected-foreground: oklch(0.985 0.002 247.839);
+  --status-active: oklch(0.7 0.2 145);
+  --status-active-foreground: oklch(0.13 0.028 261.692);
+  --status-inactive: oklch(0.5 0.02 261.692);
+  --status-inactive-foreground: oklch(0.985 0.002 247.839);
+  
+  /* Surface & UI Colors - Dark Mode */
+  --surface-primary: oklch(0.16 0.03 261.692);
+  --surface-secondary: oklch(0.19 0.032 264.665);
+  --text-primary: oklch(0.985 0.002 247.839);
+  --text-secondary: oklch(0.707 0.022 261.325);
+  --text-tertiary: oklch(0.55 0.02 261.325);
+  --border-light: oklch(1 0 0 / 10%);
+  --border-medium: oklch(1 0 0 / 15%);
 }
 
 @layer base {

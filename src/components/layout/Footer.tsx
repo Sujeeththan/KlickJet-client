@@ -21,13 +21,13 @@ const TikTok = ({ className }: { className?: string }) => (
 
 export function Footer() {
   return (
-    <footer className="bg-gray-100 pt-16 pb-8">
+    <footer className="bg-surface-secondary pt-16 pb-8">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {/* About Section */}
           <div>
             <h3 className="font-bold text-lg mb-4">About KlickJet</h3>
-            <p className="text-sm text-gray-600 leading-relaxed max-w-xs">
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
               Your one-stop shop for the freshest groceries and household essentials.
               Quality products, unbeatable prices.
             </p>
@@ -36,18 +36,18 @@ export function Footer() {
           {/* Help & Support */}
           <div>
             <h3 className="font-bold text-lg mb-4">Help & Support</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
+            <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <Link href="#" className="hover:text-gray-900">Contact Us</Link>
+                <Link href="#" className="hover:text-foreground">Contact Us</Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-gray-900">FAQ</Link>
+                <Link href="#" className="hover:text-foreground">FAQ</Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-gray-900">Shipping</Link>
+                <Link href="#" className="hover:text-foreground">Shipping</Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-gray-900">Track Order</Link>
+                <Link href="#" className="hover:text-foreground">Track Order</Link>
               </li>
             </ul>
           </div>
@@ -58,16 +58,16 @@ export function Footer() {
               <h3 className="font-bold text-lg mb-4">Privacy</h3>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li>
-                  <Link href="#" className="hover:text-gray-900">About Us</Link>
+                  <Link href="#" className="hover:text-foreground">About Us</Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-gray-900">Careers</Link>
+                  <Link href="#" className="hover:text-foreground">Careers</Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-gray-900">Press</Link>
+                  <Link href="#" className="hover:text-foreground">Press</Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-gray-900">Terms of services</Link>
+                  <Link href="#" className="hover:text-foreground">Terms of services</Link>
                 </li>
               </ul>
             </div>
@@ -91,7 +91,7 @@ export function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="border-t border-gray-200 pt-8 text-center text-sm text-gray-500">
+        <div className="border-t border-border pt-8 text-center text-sm text-muted-foreground">
           © {new Date().getFullYear()} KlickJet. All Rights Reserved.
         </div>
       </div>

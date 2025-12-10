@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { ShoppingCart, Package } from "lucide-react";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 
 interface Order {
   id: number;
@@ -54,19 +55,17 @@ export default function OrdersPage() {
       // Let's assume response.orders is Order[] from types/order.ts
       const fetchedOrders: any[] = response.orders || [];
       
-      // Map to component's expected format (or update component to use real types)
-      // I'll update component to handle real types better in a future step or just map here.
-      // Mapping:
+      // Map backend response to component's expected format
       const mappedOrders = fetchedOrders.map((o: any) => ({
         id: o._id,
-        customerId: o.user?._id || o.user, // user might be populated
-        customerName: o.user?.name || "Customer", // Fallback
+        customerId: typeof o.customer_id === 'object' ? o.customer_id._id : o.customer_id,
+        customerName: typeof o.customer_id === 'object' ? o.customer_id.name : "Customer",
         products: o.items.map((i: any) => ({
-            name: i.product?.name || "Product", // product might be populated
+            name: typeof i.product === 'object' ? i.product.name : "Product",
             quantity: i.quantity,
             price: i.price || 0
         })),
-        totalAmount: o.totalAmount,
+        totalAmount: o.total_amount, // Backend uses total_amount (snake_case)
         status: o.status,
         createdAt: o.createdAt
       }));
@@ -79,22 +78,7 @@ export default function OrdersPage() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "processing":
-        return "bg-blue-100 text-blue-800";
-      case "shipped":
-        return "bg-purple-100 text-purple-800";
-      case "delivered":
-        return "bg-green-100 text-green-800";
-      case "cancelled":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+
 
   return (
     <ProtectedRoute allowedRoles={["seller"]}>
@@ -131,9 +115,7 @@ export default function OrdersPage() {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <h3 className="font-semibold">Order #{order.id}</h3>
-                          <Badge className={getStatusColor(order.status)}>
-                            {order.status}
-                          </Badge>
+                          <StatusBadge status={order.status as any} />
                         </div>
                         <p className="text-sm text-muted-foreground">
                           Customer: {order.customerName}

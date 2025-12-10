@@ -35,14 +35,14 @@ export function Header() {
         <nav className="flex items-center gap-6">
           <Link 
             href="/" 
-            className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             Shops
           </Link>
           {(!user || user.role === "customer") && (
             <Link 
               href="/cart" 
-              className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors relative"
+              className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors relative"
             >
               <ShoppingCart className="h-4 w-4" />
               Cart
@@ -62,7 +62,7 @@ export function Header() {
                 <User className="h-4 w-4" />
                 Dashboard
               </Link>
-              <span className="text-sm text-gray-600">{user.email}</span>
+              <span className="text-sm text-muted-foreground">{user.email}</span>
               {user.role !== 'admin' && user.role !== 'seller' && user.role !== 'deliverer' && (
                 <button
                   onClick={logout}
@@ -92,13 +92,13 @@ export function Header() {
                   <div className="flex items-center gap-3 ml-2">
                     <Link 
                       href="/auth/register/customer"
-                      className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                      className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-4 py-2 border border-border rounded-md hover:bg-accent"
                     >
                       Sign Up
                     </Link>
                     <Link 
                       href="/auth/login"
-                      className="text-sm font-medium text-white bg-black hover:bg-gray-800 transition-colors px-4 py-2 rounded-md"
+                      className="text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 transition-colors px-4 py-2 rounded-md"
                     >
                       Sign In
                     </Link>

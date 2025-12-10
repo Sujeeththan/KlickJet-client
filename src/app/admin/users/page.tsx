@@ -24,6 +24,7 @@ import {
 import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -76,43 +77,6 @@ export default function UsersPage() {
       );
     }
     setCurrentPage(1);
-  };
-
-  const getStatusBadge = (status?: string) => {
-    if (!status) return <Badge>Unknown</Badge>;
-    switch (status.toLowerCase()) {
-      case "approved":
-      case "active":
-        return (
-          <Badge className="bg-green-500 hover:bg-green-600">Active</Badge>
-        );
-      case "pending":
-        return (
-          <Badge className="bg-yellow-500 hover:bg-yellow-600">Pending</Badge>
-        );
-      case "rejected":
-        return <Badge className="bg-red-500 hover:bg-red-600">Rejected</Badge>;
-      case "inactive":
-        return (
-          <Badge className="bg-gray-500 hover:bg-gray-600">Inactive</Badge>
-        );
-      default:
-        return <Badge>{status}</Badge>;
-    }
-  };
-
-  const getRoleBadge = (role: string) => {
-    const colors: Record<string, string> = {
-      customer: "bg-blue-100 text-blue-800",
-      seller: "bg-purple-100 text-purple-800",
-      deliverer: "bg-orange-100 text-orange-800",
-      admin: "bg-red-100 text-red-800",
-    };
-    return (
-      <Badge variant="outline" className={`${colors[role] || ""} capitalize`}>
-        {role}
-      </Badge>
-    );
   };
 
   // Pagination
@@ -184,10 +148,22 @@ export default function UsersPage() {
                             {user.email}
                           </TableCell>
                           <TableCell>{user.shopName || user.name}</TableCell>
-                          <TableCell>{getRoleBadge(user.role)}</TableCell>
+                          <TableCell><Badge variant="outline" className="capitalize">{user.role}</Badge></TableCell>
                           <TableCell>
                             <div className="flex flex-col gap-1">
-                              {getStatusBadge(user.status)}
+                              {user.status && (
+                                user.status.toLowerCase() === 'approved' || user.status.toLowerCase() === 'active' ? (
+                                  <StatusBadge status="active" />
+                                ) : user.status.toLowerCase() === 'pending' ? (
+                                  <StatusBadge status="pending" />
+                                ) : user.status.toLowerCase() === 'rejected' ? (
+                                  <StatusBadge status="rejected" />
+                                ) : user.status.toLowerCase() === 'inactive' ? (
+                                  <StatusBadge status="inactive" />
+                                ) : (
+                                  <Badge>{user.status}</Badge>
+                                )
+                              )}
                               {user.status === "rejected" &&
                                 user.rejectionReason && (
                                   <span className="text-xs text-muted-foreground">

@@ -159,7 +159,7 @@ function ProductList() {
               </div>
               <Button
                 onClick={handleSearchClick}
-                className="bg-black hover:bg-gray-800 text-white px-8"
+                className=" text-white px-8"
               >
                 Search
               </Button>

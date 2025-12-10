@@ -206,7 +206,7 @@ export default function ProductDetailsPage() {
             <div className="flex flex-col gap-3">
               <Button
                 onClick={handleAddToCart}
-                className="w-full bg-gray-900 text-white hover:bg-gray-800 h-12 text-lg font-semibold"
+                className="w-full text-white h-12 text-lg font-semibold"
                 disabled={addedToCart}
               >
                 {addedToCart ? (

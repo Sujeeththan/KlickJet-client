@@ -98,7 +98,7 @@ export default function Page() {
                 <p className="text-sm text-gray-500 mt-1">Your latest order history and status</p>
               </div>
               <Link href="/orders">
-                <Button variant="default" size="sm" className="bg-gray-900 text-white hover:bg-gray-800">
+                <Button variant="default" size="sm" className=" text-white ">
                   View All
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
