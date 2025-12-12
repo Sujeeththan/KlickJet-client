@@ -10,6 +10,12 @@ export const uploadToCloudinary = async (file: File): Promise<string> => {
     process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || ""
   );
 
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  if (!cloudName) {
+    console.error("Cloudinary Cloud Name is missing. Check your .env.local file.");
+    throw new Error("Configuration Error: Cloudinary Cloud Name is missing");
+  }
+
   try {
     const response = await fetch(
       `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,

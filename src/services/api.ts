@@ -207,6 +207,16 @@ export const sellerService = {
     }>("/seller/stats");
     return response.data;
   },
+
+
+  updateSellerProfile: async (id: string, data: any) => {
+    const response = await apiClient.put<{
+      success: boolean;
+      message: string;
+      seller: any;
+    }>(`/sellers/${id}`, data);
+    return response.data;
+  },
 };
 
 // --- Category Service ---

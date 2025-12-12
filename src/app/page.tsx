@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { ArrowRight, Store } from "lucide-react";
+import { ArrowRight, Store, MapPin } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import {
@@ -17,6 +17,13 @@ import {
 import { adminService } from "@/services/api";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface Shop {
   _id: string;
@@ -25,6 +32,7 @@ interface Shop {
   address: string;
   email?: string;
   phone_no?: string;
+  shopImage?: string;
 }
 
 export default function IntroPage() {
@@ -51,12 +59,11 @@ export default function IntroPage() {
     }
   };
 
-  // Get unique locations for the filter (extract from address)
+  // Get unique locations for the filter
   const locations = Array.from(
     new Set(
       shops
         .map((shop) => {
-          // Try to extract location from address (assuming format like "City, District" or just "City")
           const addressParts = shop.address?.split(",") || [];
           return (
             addressParts[addressParts.length - 1]?.trim() ||
@@ -160,7 +167,6 @@ export default function IntroPage() {
         </div>
 
         {/* Partner Shops Section */}
-        {/* We now show this section always, but filtered for sellers */}
         <div>
           <div className="container mx-auto px-4 py-16">
             <div className="flex items-center justify-between mb-8">
@@ -189,36 +195,46 @@ export default function IntroPage() {
                     shop.address ||
                     "Unknown";
                   return (
-                    <div
-                      key={shop._id}
-                      className="bg-white border border-gray-200 rounded-lg p-8 flex flex-col items-center text-center hover:shadow-md transition-shadow"
-                    >
-                      <div className="h-24 w-24 rounded-full bg-muted mb-6 flex items-center justify-center">
-                        <Store className="h-8 w-8 text-muted-foreground" />
+                    <Card key={shop._id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                      <div className="relative h-48 w-full bg-muted">
+                        {shop.shopImage ? (
+                          <Image
+                            src={shop.shopImage}
+                            alt={shop.shopName}
+                            fill
+                            className="object-cover transition-transform duration-300 hover:scale-105"
+                          />
+                        ) : (
+                          <div className="flex items-center justify-center h-full bg-secondary/10">
+                            <Store className="h-16 w-16 text-secondary/40" />
+                          </div>
+                        )}
                       </div>
-
-                      <h3 className="text-xl font-bold mb-1 text-foreground">
-                        {shop.shopName}
-                      </h3>
-                      <div className="flex items-center gap-1 mb-2 text-sm text-muted-foreground">
-                        <span className="bg-muted px-2 py-0.5 rounded text-xs font-medium text-muted-foreground">
-                          {shopLocation}
-                        </span>
-                      </div>
-
-                      <p className="text-sm text-muted-foreground mb-8">
-                        {shop.address || "Quality products available"}
-                      </p>
-
-                      <Link
-                        href={`/products?seller_id=${shop._id}`}
-                        className="w-full"
-                      >
-                        <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-10">
-                          Shop Now <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
-                      </Link>
-                    </div>
+                      
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-start">
+                          <CardTitle className="text-xl font-bold text-foreground">{shop.shopName}</CardTitle>
+                        </div>
+                      </CardHeader>
+                      
+                      <CardContent className="pb-4">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                          <MapPin className="h-4 w-4" />
+                          <span className="font-medium">{shopLocation}</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          {shop.address || "Quality products directly from the seller."}
+                        </p>
+                      </CardContent>
+                      
+                      <CardFooter>
+                        <Link href={`/products?seller_id=${shop._id}`} className="w-full">
+                          <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                            Shop Now <ArrowRight className="ml-2 h-4 w-4" />
+                          </Button>
+                        </Link>
+                      </CardFooter>
+                    </Card>
                   );
                 })}
               </div>

@@ -12,6 +12,7 @@ export interface User {
   shopName?: string;
   vehicle_no?: string;
   vehicle_type?: string;
+  shopImage?: string;
   status?: "pending" | "approved" | "rejected" | "active" | "inactive";
   isActive?: boolean;
   rejectionReason?: string;

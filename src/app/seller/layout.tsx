@@ -6,6 +6,7 @@ import {
   LayoutDashboard, 
   Package, 
   ShoppingCart,
+  Settings,
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -24,6 +25,11 @@ const sellerLinks = [
     title: "Orders",
     href: "/seller/orders",
     icon: ShoppingCart,
+  },
+  {
+    title: "Settings",
+    href: "/seller/settings",
+    icon: Settings,
   },
 ];
 
