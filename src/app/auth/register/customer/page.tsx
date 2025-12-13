@@ -88,7 +88,7 @@ export default function RegisterCustomerPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       {/* Centered Popup Card */}
-      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 bg-white rounded-2xl shadow-xl overflow-hidden h-[600px]">
+      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 bg-white rounded-2xl shadow-xl overflow-hidden md:h-[600px]">
         {/* Left Side - Registration Form */}
         <div className="relative p-8 md:p-12 flex flex-col justify-center h-full overflow-y-auto">
           <Button

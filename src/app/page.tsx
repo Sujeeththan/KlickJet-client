@@ -108,8 +108,8 @@ export default function IntroPage() {
                 Shop from your favourite local stores hassle-free.
               </p>
 
-              <div className="flex max-w-md gap-4 items-center">
-                <div className="flex-1">
+              <div className="flex flex-col sm:flex-row w-full max-w-md gap-4 items-center">
+                <div className="flex-1 w-full">
                   <Select
                     value={selectedLocation}
                     onValueChange={setSelectedLocation}
@@ -134,7 +134,7 @@ export default function IntroPage() {
                   <Button
                     variant="outline"
                     onClick={() => setSelectedLocation("all")}
-                    className="h-12 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                    className="h-12 w-full sm:w-auto border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
                   >
                     Clear
                   </Button>
@@ -145,7 +145,7 @@ export default function IntroPage() {
               </p>
             </div>
 
-            <div className="flex-1 flex gap-4 h-[400px]">
+            <div className="flex-1 flex gap-4 h-[300px] md:h-[400px] w-full">
               <div className="flex-1 rounded-lg overflow-hidden relative">
                 <Image
                   src="/assets/landing-1.jpg"

@@ -65,11 +65,11 @@ export default function ProductsPage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
-  
+
   // For Edit Form
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-  
+
   const [formData, setFormData] = useState({
     name: "",
     category: "",
@@ -103,11 +103,11 @@ export default function ProductsPage() {
   const fetchCategories = async () => {
     try {
       try {
-         const response = await categoryService.getAll();
-         if (response.categories && response.categories.length > 0) {
-           setCategories(response.categories);
-           return;
-         }
+        const response = await categoryService.getAll();
+        if (response.categories && response.categories.length > 0) {
+          setCategories(response.categories);
+          return;
+        }
       } catch (e) {}
 
       setCategories([
@@ -141,7 +141,7 @@ export default function ProductsPage() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    
+
     // Calculate total images (existing previews + new files)
     const totalImages = imagePreviews.length + files.length;
 
@@ -166,101 +166,108 @@ export default function ProductsPage() {
   };
 
   const removeImage = (index: number) => {
-     // If we remove an image, we need to know if it was an existing URL or a newly added File.
-     // imagePreviews contains both URLs and base64 strings.
-     // images contains only new Files.
-     
-     // The index in imagePreviews corresponds to the visual list.
-     // If we remove item at index `i`, we need to remove it from `imagePreviews`.
-     // We also need to remove from `images` IF it corresponds to a new file.
-     // This mapping is tricky if we mix them blindly.
-     
-     // Better approach: 
-     // Keep `existingImages` (URLs) separate from `newImages` (Files) in state?
-     // Or just rebuild the arrays.
-     
-     // For simplicity in this fix:
-     // If `imagePreviews[index]` starts with 'data:', it's likely a new file.
-     // But we don't know EXACTLY which file index it maps to if we deleted others.
-     // So let's try to infer.
-     
-     // Use a simpler strategy:
-     // If the user deletes an image, just remove it from preview.
-     // When submitting, we only upload FILES that are still represented in `imagePreviews`? 
-     // Takes more logic.
-     
-     // Alternative: Just remove from `imagePreviews`.
-     // The `images` state (Files) might get out of sync.
-     // We will clear `images` and `imagePreviews` on open.
-     // When adding, we append.
-     // When removing:
-     // - If it's a URL, just filter logic.
-     // - If it's a blob, remove from `images`? 
-     
-     // Let's rely on filtering `imagePreviews` (some are http, some are data:).
-     // And keeping `images` (List of Files) sync is hard without an ID.
-     // Simplify: When editing, if you remove a NEW image, we might just clear all new images if it's too complex, OR:
-     // We iterate backwards?
-     
-     // Actually, let's just use `imagePreviews` to determine what to keep for existing (http).
-     // For new files, if we remove one, we should remove from `images`.
-     // But `images` doesn't match `imagePreviews` index 1:1 if there were initial existing images.
-     
-     // Correct way:
-     // `initialCount` = number of existing images.
-     // If index < initialCount: it's an existing image.
-     // If index >= initialCount: it's a new image at index (index - currentExistingCount).
-     // But if we delete an existing image, `initialCount` changes? No, we shouldn't rely on implementation details like that.
-     
-     // Simple Fix:
-     // Just recreate the file list.
-     // Actually, for this task, I'll assume if you remove a preview that is 'data:', I need to remove the corresponding file.
-     // Since that's hard, I'll just say: 
-     // New feature: `newFiles` state.
-     
-     // Let's restart the remove logic to be safe:
-     // We will store `existingImages` as strings.
-     // We will store `newFiles` as Objects { file: File, preview: string }.
-     // Only display combined list.
-     
-     // Actually, standard way:
-     const targetPreview = imagePreviews[index];
-     
-     if (targetPreview.startsWith('http') || targetPreview.startsWith('https')) {
-       // It is an existing image
-       // Just remove from previews
-       setImagePreviews(prev => prev.filter((_, i) => i !== index));
-     } else {
-       // It is a new file (data url)
-       // Remove from previews
-       setImagePreviews(prev => prev.filter((_, i) => i !== index));
-       
-       // Also remove from `images` array
-       // Finding which file corresponds is hard.
-       // Let's assume order is preserved relative to other new files.
-       // Count how many "new files" appeared BEFORE this index in the preview list.
-       let newFileIndex = 0;
-       for (let i = 0; i < index; i++) {
-         if (!imagePreviews[i].startsWith('http')) {
-           newFileIndex++;
-         }
-       }
-       setImages(prev => prev.filter((_, i) => i !== newFileIndex));
-     }
+    // If we remove an image, we need to know if it was an existing URL or a newly added File.
+    // imagePreviews contains both URLs and base64 strings.
+    // images contains only new Files.
+
+    // The index in imagePreviews corresponds to the visual list.
+    // If we remove item at index `i`, we need to remove it from `imagePreviews`.
+    // We also need to remove from `images` IF it corresponds to a new file.
+    // This mapping is tricky if we mix them blindly.
+
+    // Better approach:
+    // Keep `existingImages` (URLs) separate from `newImages` (Files) in state?
+    // Or just rebuild the arrays.
+
+    // For simplicity in this fix:
+    // If `imagePreviews[index]` starts with 'data:', it's likely a new file.
+    // But we don't know EXACTLY which file index it maps to if we deleted others.
+    // So let's try to infer.
+
+    // Use a simpler strategy:
+    // If the user deletes an image, just remove it from preview.
+    // When submitting, we only upload FILES that are still represented in `imagePreviews`?
+    // Takes more logic.
+
+    // Alternative: Just remove from `imagePreviews`.
+    // The `images` state (Files) might get out of sync.
+    // We will clear `images` and `imagePreviews` on open.
+    // When adding, we append.
+    // When removing:
+    // - If it's a URL, just filter logic.
+    // - If it's a blob, remove from `images`?
+
+    // Let's rely on filtering `imagePreviews` (some are http, some are data:).
+    // And keeping `images` (List of Files) sync is hard without an ID.
+    // Simplify: When editing, if you remove a NEW image, we might just clear all new images if it's too complex, OR:
+    // We iterate backwards?
+
+    // Actually, let's just use `imagePreviews` to determine what to keep for existing (http).
+    // For new files, if we remove one, we should remove from `images`.
+    // But `images` doesn't match `imagePreviews` index 1:1 if there were initial existing images.
+
+    // Correct way:
+    // `initialCount` = number of existing images.
+    // If index < initialCount: it's an existing image.
+    // If index >= initialCount: it's a new image at index (index - currentExistingCount).
+    // But if we delete an existing image, `initialCount` changes? No, we shouldn't rely on implementation details like that.
+
+    // Simple Fix:
+    // Just recreate the file list.
+    // Actually, for this task, I'll assume if you remove a preview that is 'data:', I need to remove the corresponding file.
+    // Since that's hard, I'll just say:
+    // New feature: `newFiles` state.
+
+    // Let's restart the remove logic to be safe:
+    // We will store `existingImages` as strings.
+    // We will store `newFiles` as Objects { file: File, preview: string }.
+    // Only display combined list.
+
+    // Actually, standard way:
+    const targetPreview = imagePreviews[index];
+
+    if (targetPreview.startsWith("http") || targetPreview.startsWith("https")) {
+      // It is an existing image
+      // Just remove from previews
+      setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+    } else {
+      // It is a new file (data url)
+      // Remove from previews
+      setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+
+      // Also remove from `images` array
+      // Finding which file corresponds is hard.
+      // Let's assume order is preserved relative to other new files.
+      // Count how many "new files" appeared BEFORE this index in the preview list.
+      let newFileIndex = 0;
+      for (let i = 0; i < index; i++) {
+        if (!imagePreviews[i].startsWith("http")) {
+          newFileIndex++;
+        }
+      }
+      setImages((prev) => prev.filter((_, i) => i !== newFileIndex));
+    }
   };
 
   const handleEditClick = (product: Product) => {
     setSelectedProduct(product);
     setFormData({
       name: product.name,
-      category: typeof product.category === 'object' ? product.category.name : (product.category || ""),
+      category:
+        typeof product.category === "object"
+          ? product.category.name
+          : product.category || "",
       description: product.description || "",
       price: product.price.toString(),
       instock: (product.instock ?? product.stock ?? 0).toString(),
     });
     setImages([]); // Clear new files
     // Ensure images is string[]
-    const existingImgs = Array.isArray(product.images) ? product.images : (product.image ? [product.image] : []);
+    const existingImgs = Array.isArray(product.images)
+      ? product.images
+      : product.image
+      ? [product.image]
+      : [];
     setImagePreviews(existingImgs);
     setShowEditDialog(true);
   };
@@ -276,12 +283,14 @@ export default function ProductsPage() {
       // 1. Upload new images
       let newUploadedUrls: string[] = [];
       if (images.length > 0) {
-        const uploadPromises = images.map(file => uploadToCloudinary(file));
+        const uploadPromises = images.map((file) => uploadToCloudinary(file));
         newUploadedUrls = await Promise.all(uploadPromises);
       }
 
       // 2. Identify existing images that were KEPT
-      const keptExistingImages = imagePreviews.filter(p => p.startsWith('http'));
+      const keptExistingImages = imagePreviews.filter((p) =>
+        p.startsWith("http")
+      );
 
       // 3. Combine
       const finalImages = [...keptExistingImages, ...newUploadedUrls];
@@ -352,7 +361,7 @@ export default function ProductsPage() {
   };
 
   const getCategoryName = (product: Product) => {
-    if (product.category && typeof product.category === 'object') {
+    if (product.category && typeof product.category === "object") {
       return product.category.name;
     }
     return product.category || "Other";
@@ -361,11 +370,16 @@ export default function ProductsPage() {
   return (
     <ProtectedRoute allowedRoles={["seller"]}>
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight">My Products</h2>
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
+              My Products
+            </h2>
           </div>
-          <Button onClick={() => router.push("/seller/products/add")}>
+          <Button
+            onClick={() => router.push("/seller/products/add")}
+            className="w-full sm:w-auto"
+          >
             <Plus className="mr-2 h-4 w-4" />
             Add Product
           </Button>
@@ -379,7 +393,7 @@ export default function ProductsPage() {
           <CardContent>
             {loading ? (
               <div className="flex justify-center py-8">
-                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
               </div>
             ) : products.length === 0 ? (
               <div className="text-center py-12">
@@ -392,45 +406,51 @@ export default function ProductsPage() {
                 </Button>
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Stock</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {products.map((product) => (
-                    <TableRow key={product._id}>
-                      <TableCell className="font-medium">{product.name}</TableCell>
-                      <TableCell>{getCategoryName(product)}</TableCell>
-                      <TableCell>Rs. {product.price.toFixed(2)}</TableCell>
-                      <TableCell>{product.instock ?? product.stock}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleEditClick(product)}
-                          >
-                            <Edit2 className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteClick(product)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Price</TableHead>
+                      <TableHead>Stock</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {products.map((product) => (
+                      <TableRow key={product._id}>
+                        <TableCell className="font-medium">
+                          {product.name}
+                        </TableCell>
+                        <TableCell>{getCategoryName(product)}</TableCell>
+                        <TableCell>Rs. {product.price.toFixed(2)}</TableCell>
+                        <TableCell>
+                          {product.instock ?? product.stock}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleEditClick(product)}
+                            >
+                              <Edit2 className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteClick(product)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -539,7 +559,9 @@ export default function ProductsPage() {
                   <label
                     htmlFor="edit-images"
                     className={`flex flex-col items-center cursor-pointer ${
-                      imagePreviews.length >= 5 ? "opacity-50 cursor-not-allowed" : ""
+                      imagePreviews.length >= 5
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
                     }`}
                   >
                     <ImagePlus className="h-10 w-10 text-muted-foreground mb-2" />
@@ -590,10 +612,10 @@ export default function ProductsPage() {
               </Button>
               <Button type="submit" disabled={submitting}>
                 {submitting ? (
-                   <>
-                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                     Updating...
-                   </>
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Updating...
+                  </>
                 ) : (
                   "Update Product"
                 )}
@@ -609,8 +631,8 @@ export default function ProductsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the product
-              "{selectedProduct?.name}".
+              This action cannot be undone. This will permanently delete the
+              product "{selectedProduct?.name}".
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -65,13 +65,14 @@ export default function UsersPage() {
           const uRole = (user.role || "").toLowerCase();
           const uType = (user.type || "").toLowerCase();
           const filter = roleFilter.toLowerCase();
-          
+
           // Direct match
           if (uRole === filter || uType === filter) return true;
-          
+
           // Map 'user' to 'customer' if that's how backend returns it
-          if (filter === 'customer' && (uRole === 'user' || uType === 'user')) return true;
-          
+          if (filter === "customer" && (uRole === "user" || uType === "user"))
+            return true;
+
           return false;
         })
       );
@@ -98,14 +99,14 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Users</h2>
           <p className="text-muted-foreground">View all users in the system</p>
         </div>
         <Select value={roleFilter} onValueChange={setRoleFilter}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full md:w-[180px]">
             <SelectValue placeholder="Filter by role" />
           </SelectTrigger>
           <SelectContent>
@@ -148,22 +149,26 @@ export default function UsersPage() {
                             {user.email}
                           </TableCell>
                           <TableCell>{user.shopName || user.name}</TableCell>
-                          <TableCell><Badge variant="outline" className="capitalize">{user.role}</Badge></TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="capitalize">
+                              {user.role}
+                            </Badge>
+                          </TableCell>
                           <TableCell>
                             <div className="flex flex-col gap-1">
-                              {user.status && (
-                                user.status.toLowerCase() === 'approved' || user.status.toLowerCase() === 'active' ? (
+                              {user.status &&
+                                (user.status.toLowerCase() === "approved" ||
+                                user.status.toLowerCase() === "active" ? (
                                   <StatusBadge status="active" />
-                                ) : user.status.toLowerCase() === 'pending' ? (
+                                ) : user.status.toLowerCase() === "pending" ? (
                                   <StatusBadge status="pending" />
-                                ) : user.status.toLowerCase() === 'rejected' ? (
+                                ) : user.status.toLowerCase() === "rejected" ? (
                                   <StatusBadge status="rejected" />
-                                ) : user.status.toLowerCase() === 'inactive' ? (
+                                ) : user.status.toLowerCase() === "inactive" ? (
                                   <StatusBadge status="inactive" />
                                 ) : (
                                   <Badge>{user.status}</Badge>
-                                )
-                              )}
+                                ))}
                               {user.status === "rejected" &&
                                 user.rejectionReason && (
                                   <span className="text-xs text-muted-foreground">
@@ -193,13 +198,13 @@ export default function UsersPage() {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4">
-                  <p className="text-sm text-muted-foreground">
+                <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
+                  <p className="text-sm text-muted-foreground order-2 sm:order-1">
                     Showing {startIndex + 1} to{" "}
                     {Math.min(endIndex, filteredUsers.length)} of{" "}
                     {filteredUsers.length} users
                   </p>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 order-1 sm:order-2 w-full sm:w-auto justify-between sm:justify-end">
                     <Button
                       variant="outline"
                       size="sm"
@@ -209,9 +214,9 @@ export default function UsersPage() {
                       <ChevronLeft className="h-4 w-4 mr-1" />
                       Previous
                     </Button>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 sm:hidden">
                       <span className="text-sm">
-                        Page {currentPage} of {totalPages}
+                        {currentPage} / {totalPages}
                       </span>
                     </div>
                     <Button

@@ -92,13 +92,13 @@ export default function Page() {
 
           {/* Recent Orders Section */}
           <Card className="border-none shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between px-6 py-4 border-b">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 py-4 border-b gap-4">
               <div>
                 <CardTitle className="text-xl font-bold">Recent Orders</CardTitle>
                 <p className="text-sm text-gray-500 mt-1">Your latest order history and status</p>
               </div>
-              <Link href="/orders">
-                <Button variant="default" size="sm" className=" text-white ">
+              <Link href="/orders" className="w-full sm:w-auto">
+                <Button variant="default" size="sm" className="w-full sm:w-auto text-white">
                   View All
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>

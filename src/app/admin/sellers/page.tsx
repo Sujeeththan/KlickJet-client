@@ -32,7 +32,14 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { CheckCircle2, XCircle, Trash2, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  CheckCircle2,
+  XCircle,
+  Trash2,
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { toast } from "sonner";
 
 // Use User type directly since the API returns User objects
@@ -80,7 +87,9 @@ export default function SellersPage() {
     if (statusFilter === "all") {
       setFilteredSellers(allSellers);
     } else {
-      setFilteredSellers(allSellers.filter(seller => seller.status === statusFilter));
+      setFilteredSellers(
+        allSellers.filter((seller) => seller.status === statusFilter)
+      );
     }
     setCurrentPage(1);
   };
@@ -162,9 +171,13 @@ export default function SellersPage() {
     if (!status) return <Badge>Unknown</Badge>;
     switch (status.toLowerCase()) {
       case "approved":
-        return <Badge className="bg-green-500 hover:bg-green-600">Approved</Badge>;
+        return (
+          <Badge className="bg-green-500 hover:bg-green-600">Approved</Badge>
+        );
       case "pending":
-        return <Badge className="bg-yellow-500 hover:bg-yellow-600">Pending</Badge>;
+        return (
+          <Badge className="bg-yellow-500 hover:bg-yellow-600">Pending</Badge>
+        );
       case "rejected":
         return <Badge className="bg-red-500 hover:bg-red-600">Rejected</Badge>;
       default:
@@ -191,8 +204,8 @@ export default function SellersPage() {
   };
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Sellers</h2>
           <p className="text-muted-foreground">
@@ -200,7 +213,7 @@ export default function SellersPage() {
           </p>
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full md:w-[180px]">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
@@ -240,18 +253,21 @@ export default function SellersPage() {
                     {currentSellers.length > 0 ? (
                       currentSellers.map((seller) => (
                         <TableRow key={seller._id}>
-                          <TableCell className="font-medium">{seller.shopName}</TableCell>
+                          <TableCell className="font-medium">
+                            {seller.shopName}
+                          </TableCell>
                           <TableCell>{seller.name}</TableCell>
                           <TableCell>{seller.email}</TableCell>
                           <TableCell>{seller.phone_no}</TableCell>
                           <TableCell>
                             <div className="flex flex-col gap-1">
                               {getStatusBadge(seller.status)}
-                              {seller.status === "rejected" && seller.rejectionReason && (
-                                <span className="text-xs text-muted-foreground">
-                                  Reason: {seller.rejectionReason}
-                                </span>
-                              )}
+                              {seller.status === "rejected" &&
+                                seller.rejectionReason && (
+                                  <span className="text-xs text-muted-foreground">
+                                    Reason: {seller.rejectionReason}
+                                  </span>
+                                )}
                             </div>
                           </TableCell>
                           <TableCell>
@@ -308,7 +324,10 @@ export default function SellersPage() {
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                        <TableCell
+                          colSpan={7}
+                          className="text-center py-8 text-muted-foreground"
+                        >
                           No sellers found
                         </TableCell>
                       </TableRow>
@@ -319,12 +338,13 @@ export default function SellersPage() {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4">
-                  <p className="text-sm text-muted-foreground">
-                    Showing {startIndex + 1} to {Math.min(endIndex, filteredSellers.length)} of{" "}
+                <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
+                  <p className="text-sm text-muted-foreground order-2 sm:order-1">
+                    Showing {startIndex + 1} to{" "}
+                    {Math.min(endIndex, filteredSellers.length)} of{" "}
                     {filteredSellers.length} sellers
                   </p>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 order-1 sm:order-2 w-full sm:w-auto justify-between sm:justify-end">
                     <Button
                       variant="outline"
                       size="sm"
@@ -334,9 +354,9 @@ export default function SellersPage() {
                       <ChevronLeft className="h-4 w-4 mr-1" />
                       Previous
                     </Button>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 sm:hidden">
                       <span className="text-sm">
-                        Page {currentPage} of {totalPages}
+                        {currentPage} / {totalPages}
                       </span>
                     </div>
                     <Button
@@ -452,8 +472,8 @@ export default function SellersPage() {
           <DialogHeader>
             <DialogTitle>Delete Seller</DialogTitle>
             <DialogDescription>
-              Are you sure you want to permanently delete {selectedSeller?.shopName}? 
-              This action cannot be undone.
+              Are you sure you want to permanently delete{" "}
+              {selectedSeller?.shopName}? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

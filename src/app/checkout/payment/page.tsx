@@ -287,24 +287,24 @@ export default function PaymentMethodPage() {
         <div className="mb-8">
           <div className="flex items-center justify-center gap-2 mb-4">
             <div className="flex items-center">
-              <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-semibold">
+              <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-semibold shrink-0">
                 ✓
               </div>
-              <span className="ml-2 text-sm font-medium">Shipping</span>
+              <span className="ml-2 text-sm font-medium hidden sm:inline">Shipping</span>
             </div>
-            <div className="w-16 h-0.5 bg-primary mx-2"></div>
+            <div className="w-8 sm:w-16 h-0.5 bg-primary mx-1 sm:mx-2"></div>
             <div className="flex items-center">
-              <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-semibold">
+              <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-semibold shrink-0">
                 2
               </div>
-              <span className="ml-2 text-sm font-medium">Payment</span>
+              <span className="ml-2 text-sm font-medium hidden sm:inline">Payment</span>
             </div>
-            <div className="w-16 h-0.5 bg-gray-300 mx-2"></div>
+            <div className="w-8 sm:w-16 h-0.5 bg-gray-300 mx-1 sm:mx-2"></div>
             <div className="flex items-center">
-              <div className="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-semibold">
+              <div className="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-semibold shrink-0">
                 3
               </div>
-              <span className="ml-2 text-sm font-medium text-gray-500">Confirmation</span>
+              <span className="ml-2 text-sm font-medium text-gray-500 hidden sm:inline">Confirmation</span>
             </div>
           </div>
         </div>

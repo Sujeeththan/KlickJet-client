@@ -150,7 +150,7 @@ function ProductList() {
           {/* Main Content */}
           <div className="flex-1">
             {/* Search Bar */}
-            <div className="flex gap-4 mb-8">
+            <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
@@ -160,25 +160,27 @@ function ProductList() {
                   onChange={(e) => setSearchInput(e.target.value)}
                 />
               </div>
-              <Button
-                onClick={handleSearchClick}
-                className=" text-white px-8"
-              >
-                Search
-              </Button>
-              {(searchQuery || categoryFilter !== "All products") && (
+              <div className="flex gap-4">
                 <Button
-                  onClick={() => {
-                    setSearchInput("");
-                    setSearchQuery("");
-                    setCategoryFilter("All products");
-                  }}
-                  variant="outline"
-                  className="px-8 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                  onClick={handleSearchClick}
+                  className="flex-1 sm:flex-none text-white px-8"
                 >
-                  Clear
+                  Search
                 </Button>
-              )}
+                {(searchQuery || categoryFilter !== "All products") && (
+                  <Button
+                    onClick={() => {
+                      setSearchInput("");
+                      setSearchQuery("");
+                      setCategoryFilter("All products");
+                    }}
+                    variant="outline"
+                    className="flex-1 sm:flex-none px-8 border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                  >
+                    Clear
+                  </Button>
+                )}
+              </div>
             </div>
 
             {/* Product Grid */}
