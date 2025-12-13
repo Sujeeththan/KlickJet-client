@@ -15,7 +15,7 @@ import { toast } from "sonner";
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (token: string, userData: User) => Promise<void>;
+  login: (token: string, userData: User, redirectUrl?: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
   refreshUser: () => Promise<void>;
@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const login = async (token: string, userData: User) => {
+  const login = async (token: string, userData: User, redirectUrl?: string) => {
     try {
       // Store token first
       Cookies.set("token", token, { expires: 7 }); // 7 days
@@ -63,8 +63,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Update user state
       setUser(userData);
 
-      // Get redirect path based on role
-      const redirectPath = getRoleRedirectPath(userData.role);
+      // Get redirect path based on role or use provided url
+      const redirectPath = redirectUrl || getRoleRedirectPath(userData.role);
 
       // Use replace instead of push to avoid back button issues
       // Use setTimeout to ensure state is updated before redirect

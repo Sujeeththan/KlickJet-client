@@ -84,7 +84,7 @@ type ShippingFormValues = z.infer<typeof shippingSchema>;
 // Component
 // --------------------
 export default function ShippingAddressPage() {
-  const { items, cartTotal } = useCart();
+  const { items, cartTotal, isLoading } = useCart();
   const { user } = useAuth();
   const router = useRouter();
   const [deletedAddress, setDeletedAddress] = useState<ShippingFormValues | null>(null);
@@ -131,11 +131,11 @@ export default function ShippingAddressPage() {
 
   // Redirect if cart empty
   useEffect(() => {
-    if (items.length === 0) {
+    if (!isLoading && items.length === 0) {
       router.push("/cart");
       toast.error("Your cart is empty");
     }
-  }, [items, router]);
+  }, [items, isLoading, router]);
 
   // Redirect non-customers
   useEffect(() => {
@@ -150,6 +150,14 @@ export default function ShippingAddressPage() {
       }
     }
   }, [user, router]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   if (items.length === 0) return null;
 

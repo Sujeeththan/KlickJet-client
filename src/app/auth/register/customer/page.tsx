@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Loader2, ShoppingBasket, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const formSchema = z.object({
   name: z
@@ -53,6 +53,8 @@ const formSchema = z.object({
 export default function RegisterCustomerPage() {
   const { login } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -75,7 +77,7 @@ export default function RegisterCustomerPage() {
       });
       
       if (response.token && response.user) {
-        await login(response.token, response.user);
+        await login(response.token, response.user, redirect || undefined);
       }
     } catch (error: any) {
       const { toast } = await import("sonner");
@@ -175,7 +177,10 @@ export default function RegisterCustomerPage() {
 
                 <p className="text-center text-xs text-gray-500">
                   Already have an account?{" "}
-                  <Link href="/auth/login" className="text-primary hover:text-primary/90 font-semibold">
+                  <Link 
+                    href={redirect ? `/auth/login?redirect=${encodeURIComponent(redirect)}` : "/auth/login"} 
+                    className="text-primary hover:text-primary/90 font-semibold"
+                  >
                     Sign in
                   </Link>
                 </p>

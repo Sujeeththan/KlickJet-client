@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -38,6 +38,8 @@ const formSchema = z.object({
 export default function LoginPage() {
   const { login, loading, isAuthenticated, user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -51,10 +53,11 @@ export default function LoginPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (!loading && isAuthenticated && user) {
-      const redirectPath = getRoleRedirectPath(user.role);
+      // If redirect param exists, use it, otherwise use role-based redirect
+      const redirectPath = redirect || getRoleRedirectPath(user.role);
       router.replace(redirectPath);
     }
-  }, [loading, isAuthenticated, user, router]);
+  }, [loading, isAuthenticated, user, router, redirect]);
 
   // Helper function for role-based redirect
   function getRoleRedirectPath(role: string): string {
@@ -85,7 +88,7 @@ export default function LoginPage() {
       });
 
       if (response.token && response.user) {
-        await login(response.token, response.user);
+        await login(response.token, response.user, redirect || undefined);
         // Success - redirect will happen in AuthContext.login()
         toast.success("Login successful!");
       } else {
@@ -226,7 +229,7 @@ export default function LoginPage() {
                 <p className="text-center text-xs text-gray-500 pt-2">
                   Don't have account?{" "}
                   <Link
-                    href="/auth/register/customer"
+                    href={redirect ? `/auth/register/customer?redirect=${encodeURIComponent(redirect)}` : "/auth/register/customer"}
                     className="text-primary hover:text-primary/90 font-semibold"
                   >
                     Sign up

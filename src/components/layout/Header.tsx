@@ -29,13 +29,15 @@ export function Header() {
 
   const NavLinks = ({ className = "" }: { className?: string }) => (
     <>
-      <Link
-        href={isProductsPage ? "/" : "/products"}
-        className={`text-sm font-medium text-muted-foreground hover:text-foreground transition-colors ${className}`}
-        onClick={() => setIsOpen(false)}
-      >
-        {isProductsPage ? "Shops" : "All Products"}
-      </Link>
+      {isProductsPage && (
+        <Link
+          href="/"
+          className={`text-sm font-medium text-muted-foreground hover:text-foreground transition-colors ${className}`}
+          onClick={() => setIsOpen(false)}
+        >
+          Shops
+        </Link>
+      )}
       {(!user || user.role === "customer") && (
         <Link
           href="/cart"

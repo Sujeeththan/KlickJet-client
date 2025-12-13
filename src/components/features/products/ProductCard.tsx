@@ -13,6 +13,7 @@ interface ProductCardProps {
   description: string;
   price: number;
   seller: string;
+  sellerId?: string;
   image?: string;
   stock?: number;
 }
@@ -23,38 +24,48 @@ export function ProductCard({
   description,
   price,
   seller,
+  sellerId,
   image,
   stock = 100,
 }: ProductCardProps) {
   const { addToCart } = useCart();
 
-  const handleAddToCart = () => {
-    addToCart({ id, title, description, price, seller, image });
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent navigation if inside a Link (though we moved Link)
+    addToCart({ id, title, description, price, seller, sellerId, image });
   };
 
   return (
     <Card className="overflow-hidden h-full flex flex-col hover:shadow-lg transition-shadow duration-300 bg-white rounded-xl border border-gray-200">
       {/* Product Image */}
-      <div className="aspect-[4/2] relative bg-muted flex items-center justify-center overflow-hidden">
-        {image ? (
-          <Image
-            src={image}
-            alt={title}
-            fill
-            className="object-cover hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <Package className="h-5 w-5 text-muted-foreground/50" />
-        )}
-      </div>
+      <Link href={`/products/${id}`} className="block">
+        <div className="aspect-[4/2] relative bg-muted flex items-center justify-center overflow-hidden">
+          {image ? (
+            <Image
+              src={image}
+              alt={title}
+              fill
+              className="object-cover hover:scale-105 transition-transform duration-300"
+            />
+          ) : (
+            <Package className="h-5 w-5 text-muted-foreground/50" />
+          )}
+        </div>
+      </Link>
 
       {/* Product Details */}
       <CardContent className="p-2.5 flex-1 flex flex-col">
         {/* Product Title */}
-        <h3 className="font-semibold text-sm text-foreground mb-0.5">{title}</h3>
+        <Link href={`/products/${id}`}>
+          <h3 className="font-semibold text-sm text-foreground mb-0.5 hover:text-primary transition-colors">
+            {title}
+          </h3>
+        </Link>
 
         {/* Description */}
-        <p className="text-xs text-muted-foreground mb-1.5">{description}</p>
+        <p className="text-xs text-muted-foreground mb-1.5 line-clamp-2">
+          {description}
+        </p>
 
         {/* Price */}
         <p className="text-base font-bold text-foreground mb-0.5">
@@ -70,13 +81,16 @@ export function ProductCard({
           <span>{seller}</span>
         </div>
 
-        {/* View Details Button */}
-        <Link href={`/products/${id}`} className="mt-auto">
-          <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg py-1.5 flex items-center justify-center gap-1.5 text-xs">
-            View Details
+        {/* Add to List Button */}
+        <div className="mt-auto">
+          <Button 
+            onClick={handleAddToCart}
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg py-1.5 flex items-center justify-center gap-1.5 text-xs"
+          >
+            Add to List
             <ArrowRight className="h-3 w-3" />
           </Button>
-        </Link>
+        </div>
       </CardContent>
     </Card>
   );

@@ -15,6 +15,8 @@ import { Product } from "@/types/product";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 
+import Link from "next/link";
+
 function ProductList() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
@@ -34,6 +36,14 @@ function ProductList() {
     try {
       setLoading(true);
       const params: any = {};
+
+      // Restriction: Logged-in users MUST have a seller_id to view products
+      // This enforces the "Single Shop" display rule
+      if (user && !sellerIdFilter) {
+        setProducts([]);
+        setLoading(false);
+        return;
+      }
 
       // Apply seller_id filter if present in URL
       // This allows filtering by specific shop for all users (customers and sellers viewing their own public shop)
@@ -157,7 +167,10 @@ function ProductList() {
                   placeholder="Search for products in this Shops"
                   className="pl-10 w-full bg-white border-gray-200"
                   value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
+                  onChange={(e) => {
+                    setSearchInput(e.target.value);
+                    setSearchQuery(e.target.value);
+                  }}
                 />
               </div>
               <div className="flex gap-4">
@@ -209,6 +222,20 @@ function ProductList() {
                       ? product.seller
                       : "Unknown Seller";
 
+                  // Get seller ID
+                  const sellerId =
+                    typeof product.seller_id === "object" &&
+                    product.seller_id?._id
+                      ? product.seller_id._id
+                      : typeof product.seller_id === "string"
+                      ? product.seller_id
+                      : typeof product.seller === "object" &&
+                        product.seller?._id
+                      ? product.seller._id
+                      : typeof product.seller === "string"
+                      ? product.seller
+                      : undefined;
+
                   // Get main image
                   const mainImage =
                     product.images && product.images.length > 0
@@ -223,6 +250,7 @@ function ProductList() {
                       description={product.description || ""}
                       price={product.price}
                       seller={sellerName}
+                      sellerId={sellerId}
                       image={mainImage}
                       stock={product.stock || product.instock || 0}
                     />
@@ -231,11 +259,23 @@ function ProductList() {
               </div>
             ) : (
               <div className="text-center py-20 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                <p className="text-gray-500">No products found</p>
-                {sellerIdFilter && (
-                  <p className="text-sm text-gray-400 mt-2">
-                    This shop doesn't have any products yet
-                  </p>
+                {user && !sellerIdFilter ? (
+                  <>
+                    <p className="text-lg font-medium text-gray-900 mb-2">Please select a shop</p>
+                    <p className="text-gray-500 mb-6">You need to select a shop to view products.</p>
+                    <Link href="/">
+                      <Button>Browse Shops</Button>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-gray-500">No products found</p>
+                    {sellerIdFilter && (
+                      <p className="text-sm text-gray-400 mt-2">
+                        This shop doesn't have any products yet
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
             )}

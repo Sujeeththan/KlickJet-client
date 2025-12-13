@@ -12,6 +12,7 @@ export interface CartItem {
   description?: string;
   price: number;
   seller?: string;
+  sellerId?: string;
   quantity: number;
   image?: string;
 }
@@ -42,6 +43,30 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setMounted(true);
       
       if (isAuthenticated) {
+        // Check for local cart items to sync
+        const savedCart = localStorage.getItem("klickjet-cart");
+        if (savedCart) {
+          try {
+            const localItems: CartItem[] = JSON.parse(savedCart);
+            if (localItems.length > 0) {
+              console.log("Syncing local cart to backend...");
+              // Sync items sequentially to ensure order or handle errors individually
+              for (const item of localItems) {
+                try {
+                  await cartService.addToCart(item.id.toString(), item.quantity);
+                } catch (err) {
+                  console.error(`Failed to sync item ${item.title}:`, err);
+                }
+              }
+              // Clear local cart after attempting sync
+              localStorage.removeItem("klickjet-cart");
+              toast.success("Your cart has been synced!");
+            }
+          } catch (error) {
+            console.error("Error processing local cart for sync:", error);
+          }
+        }
+
         // Load from backend for authenticated users
         try {
           setIsLoading(true);
@@ -61,13 +86,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
                   item.product.seller_id?.shopName ||
                   item.product.seller_id?.name ||
                   "Unknown Shop",
+                sellerId: item.product.seller_id?._id || item.product.seller?._id || item.product.seller || null,
               }));
             setItems(transformedItems);
           }
         } catch (error) {
           console.error("Failed to load cart from backend:", error);
-          // Fall back to localStorage
-          loadFromLocalStorage();
+          // Fall back to localStorage if backend fails entirely? 
+          // Note: We just cleared localStorage above if we synced. 
+          // If sync worked but getCart failed, we might show empty cart.
+          // But usually getCart shouldn't fail if addToCart worked.
         } finally {
           setIsLoading(false);
         }
@@ -118,6 +146,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
               item.product.seller_id?.shopName ||
               item.product.seller_id?.name ||
               "Unknown Shop",
+            sellerId: item.product.seller_id?._id || item.product.seller?._id || item.product.seller || null,
           }));
         setItems(transformedItems);
       }
@@ -127,10 +156,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const addToCart = async (product: Omit<CartItem, "quantity">, quantity: number = 1) => {
+    // Check for multiple shop restriction
+    if (items.length > 0) {
+      // Assuming all items in cart are from same shop (enforced by this logic)
+      const currentShopId = items[0].sellerId;
+      // If product has sellerId and it doesn't match
+      if (currentShopId && product.sellerId && currentShopId !== product.sellerId) {
+         toast.error("You can only order from one shop at a time. Please clear your cart first.");
+         return;
+      }
+    }
+
     // Check if product already exists in cart
     const existingItem = items.find((item) => item.id === product.id);
     
     if (existingItem) {
+      // If checking plain 'id', might need to be careful if it's number vs string
       toast.error("This product is already added");
       return;
     }

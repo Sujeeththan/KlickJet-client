@@ -4,7 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Minus, Package, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Minus, Package, Plus, Trash2, Store } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/contexts/CartContext";
@@ -84,6 +84,16 @@ export default function CartPage() {
             <p className="text-sm text-muted-foreground">
               Items ({items.length})
             </p>
+
+            {/* Shop Name Header */}
+            {items.length > 0 && items[0].seller && (
+              <div className="bg-secondary/10 p-3 rounded-md border border-secondary/20 flex items-center gap-2 mb-4">
+                <Store className="h-4 w-4 text-secondary" />
+                <span className="font-medium text-secondary">
+                  Shopping from: <span className="font-bold">{items[0].seller}</span>
+                </span>
+              </div>
+            )}
 
             <div className="space-y-3">
               {items.map((item) => (
@@ -209,7 +219,7 @@ export default function CartPage() {
                     if (user) {
                       router.push("/checkout/shipping");
                     } else {
-                      router.push("/auth/login");
+                      router.push("/auth/register/customer?redirect=/cart");
                     }
                   }}
                 >
