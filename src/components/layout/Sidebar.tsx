@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -22,8 +21,8 @@ export function Sidebar({ className, links }: SidebarProps) {
   const { user, logout } = useAuth();
 
   return (
-    <div className={cn("pb-12 flex flex-col h-full", className)}>
-      <div className="space-y-4 py-4 flex-1">
+    <div className={cn("flex flex-col h-full", className)}>
+      <div className="space-y-4 py-4 flex-1 overflow-hidden">
         <div className="px-3 py-2">
           <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
             {user?.role
@@ -95,10 +94,10 @@ export function MobileSidebar({ links }: SidebarProps) {
           <span className="sr-only">Toggle Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="pr-0">
-        <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
-          <Sidebar links={links} className="pl-1" />
-        </ScrollArea>
+      <SheetContent side="left" className="pr-0 flex flex-col">
+        <div className="flex-1 overflow-y-auto my-4 pb-10 pl-6">
+          <Sidebar links={links} className="pl-1 h-full" />
+        </div>
       </SheetContent>
     </Sheet>
   );
