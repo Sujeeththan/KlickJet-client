@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { ArrowRight, Store, MapPin, Clock, Truck } from "lucide-react";
+import { ArrowRight, Store, MapPin, Clock, Truck, ShoppingBasket, ShieldCheck, Tag } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import {
@@ -170,6 +170,7 @@ export default function IntroPage() {
       <Header />
 
       <main className="flex-1">
+        <div className="container mx-auto">
         <div className="bg-surface-primary py-16 md:py-24">
           <div className="container mx-auto px-4 flex flex-col md:flex-row items-center gap-12">
             <div className="flex-1 space-y-6">
@@ -180,6 +181,9 @@ export default function IntroPage() {
               </h1>
               <p className="text-lg text-muted-foreground max-w-lg">
                 Shop from your favourite local stores hassle-free.
+Discover fresh products, exclusive deals, and personalized offers.
+Support your community while enjoying fast and reliable delivery.
+Browse, select, and order—all from the comfort of your home.
               </p>
 
               <div className="flex flex-col sm:flex-row w-full max-w-md gap-4 items-center">
@@ -217,6 +221,8 @@ export default function IntroPage() {
               <p className="text-sm text-muted-foreground/70">
                 Select your area to see nearby shops
               </p>
+
+
             </div>
 
             <div className="flex-1 flex gap-4 h-[300px] md:h-[400px] w-full">
@@ -238,7 +244,51 @@ export default function IntroPage() {
               </div>
             </div>
           </div>
-        </div>
+          </div>
+
+          <div className="container mx-auto px-4 mt-16">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 pt-8 border-t border-border/20">
+              <div className="flex flex-col items-center text-center space-y-3 p-4 rounded-xl hover:bg-white/50 transition-colors">
+                <div className="bg-green-100 p-4 rounded-full shadow-sm">
+                  <ShoppingBasket className="h-8 w-8 text-green-700" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-lg text-foreground">Fresh Groceries</h4>
+                  <p className="text-sm text-muted-foreground">Direct from trusted local shops.</p>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center text-center space-y-3 p-4 rounded-xl hover:bg-white/50 transition-colors">
+                <div className="bg-blue-100 p-4 rounded-full shadow-sm">
+                  <Truck className="h-8 w-8 text-blue-700" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-lg text-foreground">Fast Delivery</h4>
+                  <p className="text-sm text-muted-foreground">Doorstep delivery in minutes.</p>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center text-center space-y-3 p-4 rounded-xl hover:bg-white/50 transition-colors">
+                <div className="bg-purple-100 p-4 rounded-full shadow-sm">
+                  <ShieldCheck className="h-8 w-8 text-purple-700" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-lg text-foreground">Secure Payment</h4>
+                  <p className="text-sm text-muted-foreground">100% secure transactions.</p>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center text-center space-y-3 p-4 rounded-xl hover:bg-white/50 transition-colors">
+                <div className="bg-orange-100 p-4 rounded-full shadow-sm">
+                  <Tag className="h-8 w-8 text-orange-700" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-lg text-foreground">Best Offers</h4>
+                  <p className="text-sm text-muted-foreground">Daily discounts & deals.</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
         {/* Partner Shops Section */}
         <div>
@@ -358,6 +408,7 @@ export default function IntroPage() {
               </div>
             )}
           </div>
+        </div>
         </div>
       </main>
 
