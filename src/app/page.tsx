@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { ArrowRight, Store, MapPin } from "lucide-react";
+import { ArrowRight, Store, MapPin, Clock, Truck } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import {
@@ -24,6 +24,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface Shop {
   _id: string;
@@ -57,11 +58,62 @@ function getPlaceholderImage(id: string) {
   return PLACEHOLDER_SHOP_IMAGES[charCodeSum % PLACEHOLDER_SHOP_IMAGES.length];
 }
 
+// Helper to get deterministic random details for a shop
+function getShopRandomDetails(id: string) {
+  const seed = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  
+  // Delivery
+  const deliveryTimes = ["15-30 mins", "20-40 mins", "30-45 mins", "45-60 mins", "Within 30 mins"];
+  const deliveryTime = deliveryTimes[seed % deliveryTimes.length];
+  
+  // Badges
+  const possibleBadges = [
+    { text: "Best Seller", variant: "secondary", className: "bg-amber-100 text-amber-700 hover:bg-amber-200 border-none" },
+    { text: "Offers Available", variant: "outline", className: "border-blue-200 text-blue-600 bg-blue-50/50" },
+    { text: "Top Rated", variant: "secondary", className: "bg-green-100 text-green-700 hover:bg-green-200 border-none" },
+    { text: "Premium", variant: "outline", className: "border-purple-200 text-purple-600 bg-purple-50/50" }
+  ];
+  
+  const shopBadges = [];
+  // Deterministically select badges
+  if (seed % 3 === 0) shopBadges.push(possibleBadges[0]);
+  if (seed % 2 === 0) shopBadges.push(possibleBadges[1]);
+  if (seed % 5 === 0) shopBadges.push(possibleBadges[2]);
+  if (shopBadges.length === 0) shopBadges.push(possibleBadges[3]); // Ensure at least one
+
+  // Timings
+  const openTimes = [8, 9, 10];
+  const closeTimes = [20, 21, 22, 23];
+  const openTime = openTimes[seed % openTimes.length];
+  const closeTime = closeTimes[seed % closeTimes.length];
+  
+  const formatTime = (h: number) => {
+    const am = h < 12 ? "AM" : "PM";
+    const hour = h % 12 || 12;
+    return `${hour.toString().padStart(2, '0')}:00 ${am}`;
+  };
+  
+  const timing = `${formatTime(openTime)} - ${formatTime(closeTime)}`;
+  
+  return {
+    deliveryTime,
+    badges: shopBadges.slice(0, 2), // Limit to 2 badges max
+    timing,
+    openHour: openTime,
+    closeHour: closeTime
+  };
+}
+
 export default function IntroPage() {
   const { user } = useAuth();
   const [selectedLocation, setSelectedLocation] = useState<string>("all");
   const [shops, setShops] = useState<Shop[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentHour, setCurrentHour] = useState(12);
+
+  useEffect(() => {
+    setCurrentHour(new Date().getHours());
+  }, []);
 
   useEffect(() => {
     fetchApprovedSellers();
@@ -216,6 +268,10 @@ export default function IntroPage() {
                     addressParts[addressParts.length - 1]?.trim() ||
                     shop.address ||
                     "Unknown";
+                  
+                  const details = getShopRandomDetails(shop._id);
+                  const isOpen = currentHour >= details.openHour && currentHour < details.closeHour;
+                  
                   return (
                     <Card key={shop._id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
                       <div className="relative h-48 w-full bg-muted">
@@ -241,6 +297,40 @@ export default function IntroPage() {
                         <p className="text-sm text-muted-foreground line-clamp-2">
                           {shop.address || "Quality products directly from the seller."}
                         </p>
+                        
+                        <div className="mt-4 space-y-3 pt-3 border-t border-border/50">
+                          {/* Delivery Info */}
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Truck className="h-3.5 w-3.5 text-primary" />
+                            <span className="font-medium">Fast Delivery</span>
+                            <span className="text-muted-foreground/60">•</span>
+                            <span>{details.deliveryTime}</span>
+                          </div>
+
+                          {/* Open Status & Timing */}
+                          <div className="flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-1.5">
+                              <Clock className={`h-3.5 w-3.5 ${isOpen ? "text-green-600" : "text-red-500"}`} />
+                              <span className={`${isOpen ? "text-green-600" : "text-red-500"} font-bold`}>
+                                {isOpen ? "Open Now" : "Closed"}
+                              </span>
+                            </div>
+                            <span className="text-muted-foreground font-medium">{details.timing}</span>
+                          </div>
+
+                          {/* Badges */}
+                          <div className="flex flex-wrap gap-2 pt-1">
+                            {details.badges.map((badge, idx) => (
+                              <Badge 
+                                key={idx} 
+                                variant={badge.variant as any} 
+                                className={`h-5 px-1.5 text-[10px] ${badge.className}`}
+                              >
+                                {badge.text}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
                       </CardContent>
                       
                       <CardFooter>
