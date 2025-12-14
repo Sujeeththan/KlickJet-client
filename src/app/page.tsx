@@ -35,6 +35,28 @@ interface Shop {
   shopImage?: string;
 }
 
+// Array of placeholder shop images
+const PLACEHOLDER_SHOP_IMAGES = [
+  "https://images.unsplash.com/photo-1540340061722-9293d5163008?q=80&w=871&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?q=80&w=774&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1628102491629-778571d893a3?q=80&w=580&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1578916171728-46686eac8d58?q=80&w=774&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=774&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1601600576337-c1d8a0d1373c?q=80&w=387&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1670684684445-a4504dca0bbc?q=80&w=883&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1655522060985-6769176edff7?q=80&w=774&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1534723452862-4c874018d66d?q=80&w=870&auto=format&fit=crop",
+  "https://plus.unsplash.com/premium_photo-1664305032567-2c460e29dec1?q=80&w=768&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1550989460-0adf9ea622e2?q=80&w=387&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1601599963565-b7ba29c8e3ff?q=80&w=464&auto=format&fit=crop"
+];
+
+// Helper to get a deterministic random image based on string id
+function getPlaceholderImage(id: string) {
+  const charCodeSum = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return PLACEHOLDER_SHOP_IMAGES[charCodeSum % PLACEHOLDER_SHOP_IMAGES.length];
+}
+
 export default function IntroPage() {
   const { user } = useAuth();
   const [selectedLocation, setSelectedLocation] = useState<string>("all");
@@ -197,18 +219,12 @@ export default function IntroPage() {
                   return (
                     <Card key={shop._id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
                       <div className="relative h-48 w-full bg-muted">
-                        {shop.shopImage ? (
-                          <Image
-                            src={shop.shopImage}
-                            alt={shop.shopName}
-                            fill
-                            className="object-cover transition-transform duration-300 hover:scale-105"
-                          />
-                        ) : (
-                          <div className="flex items-center justify-center h-full bg-secondary/10">
-                            <Store className="h-16 w-16 text-secondary/40" />
-                          </div>
-                        )}
+                        <Image
+                          src={shop.shopImage || getPlaceholderImage(shop._id)}
+                          alt={shop.shopName}
+                          fill
+                          className="object-cover transition-transform duration-300 hover:scale-105"
+                        />
                       </div>
                       
                       <CardHeader className="pb-2">
