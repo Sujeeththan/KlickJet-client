@@ -119,6 +119,15 @@ export default function RegisterSellerPage() {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
+          <Link href="/">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-900"
+            >
+              Home
+            </Button>
+          </Link>
           <div className="w-full max-w-md mx-auto space-y-6 py-4">
              <div className="text-center">
               <h2 className="text-2xl font-bold tracking-tight text-gray-900">

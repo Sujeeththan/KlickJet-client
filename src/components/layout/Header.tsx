@@ -21,6 +21,7 @@ export function Header() {
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const isProductsPage = pathname === "/products";
+  const isHomePage = pathname === "/";
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -36,6 +37,15 @@ export function Header() {
           onClick={() => setIsOpen(false)}
         >
           Shops
+        </Link>
+      )}
+      {user && user.role === "seller" && !isHomePage && (
+        <Link
+          href="/"
+          className={`text-sm font-medium text-muted-foreground hover:text-foreground transition-colors ${className}`}
+          onClick={() => setIsOpen(false)}
+        >
+          Home
         </Link>
       )}
       {(!user || user.role === "customer") && (
