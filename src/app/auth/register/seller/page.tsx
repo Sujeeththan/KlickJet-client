@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Loader2, ShoppingBasket, ArrowLeft } from "lucide-react";
+import { Loader2, ShoppingBasket, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -70,6 +70,7 @@ export default function RegisterSellerPage() {
   const { login } = useAuth();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -119,15 +120,7 @@ export default function RegisterSellerPage() {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <Link href="/">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-900"
-            >
-              Home
-            </Button>
-          </Link>
+          
           <div className="w-full max-w-md mx-auto space-y-6 py-4">
              <div className="text-center">
               <h2 className="text-2xl font-bold tracking-tight text-gray-900">
@@ -214,7 +207,27 @@ export default function RegisterSellerPage() {
                     <FormItem>
                       <FormLabel className="font-medium">Password</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="Enter Your Password" {...field} className="rounded-lg h-10" />
+                        <div className="relative">
+                          <Input 
+                            type={showPassword ? "text" : "password"} 
+                            placeholder="Enter Your Password" 
+                            {...field} 
+                            className="rounded-lg h-10 pr-10" 
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-0 top-0 h-10 w-10 text-gray-500 hover:text-gray-700"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
