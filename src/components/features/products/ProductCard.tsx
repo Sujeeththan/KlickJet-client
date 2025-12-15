@@ -7,6 +7,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Package, MapPin, ArrowRight } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 
+import { toast } from "sonner";
+import { getShopRandomDetails, isShopOpen } from "@/utils/shopUtils";
+
 interface ProductCardProps {
   id: number | string;
   title: string;
@@ -32,6 +35,17 @@ export function ProductCard({
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent navigation if inside a Link (though we moved Link)
+
+    if (sellerId) {
+      const details = getShopRandomDetails(sellerId);
+      const isOpen = isShopOpen(details.openHour, details.closeHour);
+      
+      if (!isOpen) {
+        toast.error("This shop is currently closed.");
+        return;
+      }
+    }
+    
     addToCart({ id, title, description, price, seller, sellerId, image });
   };
 

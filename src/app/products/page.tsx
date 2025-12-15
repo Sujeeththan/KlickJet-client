@@ -18,6 +18,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 import { VoiceSearch, VoiceCommand } from "@/components/features/voice/VoiceSearch";
 import { useCart } from "@/contexts/CartContext";
+import { getShopRandomDetails, isShopOpen } from "@/utils/shopUtils";
 
 function ProductList() {
   const { user } = useAuth();
@@ -50,6 +51,20 @@ function ProductList() {
               : typeof targetProduct.seller === "string"
               ? targetProduct.seller
               : undefined;
+
+           if (sellerId) {
+             const details = getShopRandomDetails(sellerId);
+             const isOpen = isShopOpen(details.openHour, details.closeHour);
+             if (!isOpen) {
+               const closedMsg = "This shop is currently closed.";
+               toast.error(closedMsg);
+               if (typeof window !== "undefined" && "speechSynthesis" in window) {
+                   const utterance = new SpeechSynthesisUtterance(closedMsg);
+                   window.speechSynthesis.speak(utterance);
+               }
+               return;
+             }
+           }
 
            const mainImage =
             targetProduct.images && targetProduct.images.length > 0

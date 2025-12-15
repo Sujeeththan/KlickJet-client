@@ -11,6 +11,7 @@ import { useCart } from "@/contexts/CartContext";
 import { productService } from "@/services/product.service";
 import { Product } from "@/types/product";
 import { toast } from "sonner";
+import { getShopRandomDetails, isShopOpen } from "@/utils/shopUtils";
 
 export default function ProductDetailsPage() {
   const params = useParams();
@@ -104,6 +105,27 @@ export default function ProductDetailsPage() {
       : product.image || "/placeholder.png";
 
   const handleAddToCart = () => {
+    // Calculate sellerId
+    const sellerId =
+      typeof product.seller_id === "object" && product.seller_id?._id
+        ? product.seller_id._id
+        : typeof product.seller_id === "string"
+        ? product.seller_id
+        : typeof product.seller === "object" && product.seller?._id
+        ? product.seller._id
+        : typeof product.seller === "string"
+        ? product.seller
+        : undefined;
+
+    if (sellerId) {
+      const details = getShopRandomDetails(sellerId);
+      const isOpen = isShopOpen(details.openHour, details.closeHour);
+      if (!isOpen) {
+        toast.error("This shop is currently closed.");
+        return;
+      }
+    }
+
     addToCart(
       {
         id: product._id,
