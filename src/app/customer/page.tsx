@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingCart, Clock, CheckCircle, TrendingUp, ArrowRight, Package, LogOut } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { orderService } from "@/services/order.service";
 
 export default function Page() {
   const { user, logout } = useAuth();
-
-  // Mock data for stats - in a real app this would come from an API
-  const stats = [
+  const [stats, setStats] = useState([
     {
       title: "Total Orders",
       value: "0",
@@ -44,7 +44,60 @@ export default function Page() {
       iconColor: "text-purple-600",
       iconBg: "bg-purple-100",
     },
-  ];
+  ]);
+
+  useEffect(() => {
+    fetchCustomerStats();
+  }, []);
+
+  const fetchCustomerStats = async () => {
+    try {
+      const response = await orderService.getAll();
+      const orders = response.orders || [];
+      
+      const totalOrders = orders.length;
+      const pendingOrders = orders.filter(order => order.status === "pending").length;
+      const completedOrders = orders.filter(order => order.status === "delivered").length;
+      const totalSpent = orders.reduce((sum, order) => sum + (order.total_amount || 0), 0);
+      
+      setStats([
+        {
+          title: "Total Orders",
+          value: totalOrders.toString(),
+          subtext: "All time",
+          icon: ShoppingCart,
+          iconColor: "text-blue-600",
+          iconBg: "bg-blue-100",
+        },
+        {
+          title: "Pending",
+          value: pendingOrders.toString(),
+          subtext: "In progress",
+          icon: Clock,
+          iconColor: "text-yellow-600",
+          iconBg: "bg-yellow-100",
+        },
+        {
+          title: "Completed",
+          value: completedOrders.toString(),
+          subtext: "Delivered",
+          icon: CheckCircle,
+          iconColor: "text-green-600",
+          iconBg: "bg-green-100",
+        },
+        {
+          title: "Total Spent",
+          value: `Rs. ${totalSpent.toFixed(2)}`,
+          subtext: "All orders",
+          icon: TrendingUp,
+          iconColor: "text-purple-600",
+          iconBg: "bg-purple-100",
+        },
+      ]);
+    } catch (error) {
+      console.error("Error fetching customer stats:", error);
+    }
+  };
 
   return (
     <ProtectedRoute allowedRoles={["customer"]}>
@@ -73,7 +126,7 @@ export default function Page() {
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {stats.map((stat, index) => (
-              <Card key={index} className="border-none shadow-sm">
+              <Card key={`stat-${index}`} className="border-none shadow-sm">
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start">
                     <div>

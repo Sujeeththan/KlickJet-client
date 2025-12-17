@@ -306,7 +306,7 @@ Browse, select, and order—all from the comfort of your home.
                           <div className="flex flex-wrap gap-2 pt-1">
                             {details.badges.map((badge, idx) => (
                               <Badge 
-                                key={idx} 
+                                key={`${shop._id}-badge-${idx}`} 
                                 variant={badge.variant as any} 
                                 className={`h-5 px-1.5 text-[10px] ${badge.className}`}
                               >

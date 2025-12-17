@@ -15,14 +15,63 @@ import {
   Cell,
   Legend,
 } from "recharts";
-
-const salesData = [{ name: "Boutique", sales: 24000 }];
-
-const pieData = [{ name: "Boutique", value: 100 }];
+import { useEffect, useState } from "react";
+import { orderService } from "@/services/order.service";
+import { userService } from "@/services/user.service";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState({
+    totalOrders: 0,
+    completedOrders: 0,
+    totalSales: 0,
+    totalSellers: 0,
+  });
+  
+  const [salesData, setSalesData] = useState([{ name: "Boutique", sales: 0 }]);
+  const [pieData, setPieData] = useState([{ name: "Boutique", value: 0 }]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      // Fetch orders
+      const orderResponse = await orderService.getAll();
+      const orders = orderResponse.orders || [];
+      
+      // Fetch users (to count sellers)
+      const userResponse = await userService.getAllUsers();
+      const users = userResponse.users || [];
+      
+      const totalOrders = orders.length;
+      const completedOrders = orders.filter(order => order.status === "delivered").length;
+      const totalSales = orders
+        .filter(order => order.status === "delivered")
+        .reduce((sum, order) => sum + (order.total_amount || 0), 0);
+      const totalSellers = users.filter(user => user.role === "seller").length;
+      
+      setStats({
+        totalOrders,
+        completedOrders,
+        totalSales,
+        totalSellers,
+      });
+      
+      // Update chart data
+      setSalesData([{ name: "Boutique", sales: totalSales }]);
+      setPieData([{ name: "Boutique", value: totalSales > 0 ? 100 : 0 }]);
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    }
+  };
+
+  const refreshData = () => {
+    fetchDashboardData();
+  };
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -30,6 +79,12 @@ export default function AdminDashboard() {
           <h2 className="text-3xl font-bold tracking-tight">Admin Dashboard</h2>
           <p className="text-muted-foreground">System overview and analytics</p>
         </div>
+        <button 
+          onClick={refreshData}
+          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md text-sm font-medium transition-colors"
+        >
+          Refresh Data
+        </button>
       </div>
 
       {/* Stats Cards */}
@@ -40,7 +95,7 @@ export default function AdminDashboard() {
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">4</div>
+            <div className="text-2xl font-bold">{stats.totalOrders}</div>
           </CardContent>
         </Card>
         <Card>
@@ -49,7 +104,7 @@ export default function AdminDashboard() {
             <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1</div>
+            <div className="text-2xl font-bold">{stats.completedOrders}</div>
           </CardContent>
         </Card>
         <Card>
@@ -59,7 +114,7 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-sm font-medium text-muted-foreground">Rs.</div>
-            <div className="text-2xl font-bold">24000.00</div>
+            <div className="text-2xl font-bold">{stats.totalSales.toFixed(2)}</div>
           </CardContent>
         </Card>
         <Card>
@@ -68,7 +123,7 @@ export default function AdminDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1</div>
+            <div className="text-2xl font-bold">{stats.totalSellers}</div>
           </CardContent>
         </Card>
       </div>

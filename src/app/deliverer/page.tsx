@@ -2,13 +2,13 @@
 
 import { ProtectedRoute } from "@/features/auth/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
-import { StatCard } from "@/features/deliverer/StatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Truck, Package, CheckCircle, DollarSign } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { deliveryService } from "@/services/delivery.service";
 
 interface DashboardStats {
   totalDeliveries: number;
@@ -26,6 +26,26 @@ interface Delivery {
   amount: number;
   items: number;
 }
+
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon: React.ElementType;
+}
+
+const StatCard = ({ title, value, icon: Icon }: StatCardProps) => {
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <Icon className="h-4 w-4 text-muted-foreground" />
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{value}</div>
+      </CardContent>
+    </Card>
+  );
+};
 
 export default function Page() {
   const { user } = useAuth();
@@ -46,20 +66,55 @@ export default function Page() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API calls
-      // For now, using placeholder data
+      
+      // Fetch deliveries assigned to the deliverer
+      const response = await deliveryService.getAll();
+      const allDeliveries = response.deliveries || [];
+      
+      // Filter deliveries assigned to current deliverer
+      const delivererDeliveries = allDeliveries.filter(delivery => 
+        delivery.deliverer_id === user?.id
+      );
+      
+      const totalDeliveries = delivererDeliveries.length;
+      const activeDeliveries = delivererDeliveries.filter(delivery => 
+        delivery.status !== "delivered" && delivery.status !== "failed"
+      ).length;
+      const completedDeliveries = delivererDeliveries.filter(delivery => 
+        delivery.status === "delivered"
+      ).length;
+      const totalEarnings = delivererDeliveries
+        .filter(delivery => delivery.status === "delivered")
+        .reduce((sum, delivery) => sum + (delivery.amount || 0), 0);
+      
       setStats({
-        totalDeliveries: 0,
-        activeDeliveries: 0,
-        completedDeliveries: 0,
-        totalEarnings: 0.0,
+        totalDeliveries,
+        activeDeliveries,
+        completedDeliveries,
+        totalEarnings,
       });
-      setRecentDeliveries([]);
+      
+      // Map deliveries to the format expected by the UI
+      const mappedDeliveries = delivererDeliveries.slice(0, 5).map(delivery => ({
+        id: delivery._id,
+        orderId: delivery.order_id,
+        customerName: delivery.customer_name || "Unknown Customer",
+        deliveryAddress: delivery.address,
+        status: delivery.status,
+        amount: delivery.amount || 0,
+        items: delivery.items_count || 0,
+      }));
+      
+      setRecentDeliveries(mappedDeliveries);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const refreshData = () => {
+    fetchDashboardData();
   };
 
   const getStatusColor = (status: string) => {
@@ -89,6 +144,9 @@ export default function Page() {
               Manage your deliveries and track earnings
             </p>
           </div>
+          <Button onClick={refreshData} variant="outline" size="sm">
+            Refresh Data
+          </Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

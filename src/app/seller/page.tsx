@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Package, ShoppingCart, DollarSign, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { productService } from "@/services/product.service";
+import { orderService } from "@/services/order.service";
 
 interface DashboardStats {
   totalProducts: number;
@@ -36,21 +38,50 @@ export default function Page() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API calls
-      // For now, using placeholder data
+      
+      // Fetch products for the seller
+      const productResponse = await productService.getAll({ seller_id: user?.id });
+      const products = productResponse.products || [];
+      
+      // Fetch orders containing seller's products
+      const orderResponse = await orderService.getAll();
+      const allOrders = orderResponse.orders || [];
+      
+      // Filter orders that contain seller's products
+      const sellerOrders = allOrders.filter(order => 
+        order.items.some(item => 
+          products.some(product => product._id === (typeof item.product === 'string' ? item.product : item.product._id))
+        )
+      );
+      
+      const totalProducts = products.length;
+      const totalOrders = sellerOrders.length;
+      const pendingOrders = sellerOrders.filter(order => order.status === "pending").length;
+      const totalSales = sellerOrders
+        .filter(order => order.status === "delivered")
+        .reduce((sum, order) => sum + (order.total_amount || 0), 0);
+      
       setStats({
-        totalProducts: 0,
-        totalOrders: 0,
-        totalSales: 0.0,
-        pendingOrders: 0,
+        totalProducts,
+        totalOrders,
+        totalSales,
+        pendingOrders,
       });
-      setRecentProducts([]);
-      setRecentOrders([]);
+      
+      // Set recent products (first 5)
+      setRecentProducts(products.slice(0, 5));
+      
+      // Set recent orders (first 5)
+      setRecentOrders(sellerOrders.slice(0, 5));
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const refreshData = () => {
+    fetchDashboardData();
   };
 
   return (
@@ -63,6 +94,9 @@ export default function Page() {
               Manage your products and orders
             </p>
           </div>
+          <Button onClick={refreshData} variant="outline" size="sm">
+            Refresh Data
+          </Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -109,16 +143,16 @@ export default function Page() {
                 <div className="space-y-4">
                   {recentProducts.map((product) => (
                     <div
-                      key={product.id}
+                      key={product._id}
                       className="flex items-center justify-between border-b pb-2 last:border-0"
                     >
                       <div>
                         <p className="font-medium">{product.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          Rs. {product.price}
+                          Rs. {product.price?.toFixed(2) || '0.00'}
                         </p>
                       </div>
-                      <p className="text-sm">Stock: {product.stock}</p>
+                      <p className="text-sm">Stock: {product.instock ? 'In Stock' : 'Out of Stock'}</p>
                     </div>
                   ))}
                 </div>
@@ -146,16 +180,16 @@ export default function Page() {
                 <div className="space-y-4">
                   {recentOrders.map((order) => (
                     <div
-                      key={order.id}
+                      key={order._id}
                       className="flex items-center justify-between border-b pb-2 last:border-0"
                     >
                       <div>
-                        <p className="font-medium">Order #{order.id}</p>
+                        <p className="font-medium">Order #{order._id.substring(0, 8)}</p>
                         <p className="text-sm text-muted-foreground">
-                          {order.customer}
+                          {typeof order.customer_id === 'object' && order.customer_id !== null ? order.customer_id.name : 'Customer'}
                         </p>
                       </div>
-                      <p className="text-sm font-medium">Rs. {order.total}</p>
+                      <p className="text-sm font-medium">Rs. {order.total_amount?.toFixed(2) || '0.00'}</p>
                     </div>
                   ))}
                 </div>
