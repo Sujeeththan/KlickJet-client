@@ -219,7 +219,7 @@ export default function CartPage() {
                     if (user) {
                       router.push("/checkout/shipping");
                     } else {
-                      router.push("/auth/register/customer?redirect=/cart");
+                      router.push("/auth/login?redirect=/checkout/shipping");
                     }
                   }}
                 >

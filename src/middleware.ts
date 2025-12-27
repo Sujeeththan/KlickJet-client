@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Define public routes
-  const publicRoutes = ["/auth/login", "/auth/register", "/auth/forgot-password"];
+  const publicRoutes = ["/auth/login", "/auth/register", "/auth/forgot-password", "/products", "/cart"];
   
   // Allow public routes and static assets
   if (pathname === "/" || publicRoutes.some((route) => pathname.startsWith(route)) || pathname.includes(".")) {
@@ -15,7 +15,9 @@ export function middleware(request: NextRequest) {
 
   // Protected routes
   if (!token) {
-    return NextResponse.redirect(new URL("/auth/login", request.url));
+    const url = new URL("/auth/login", request.url);
+    url.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(url);
   }
 
   // Role-based access (basic check)

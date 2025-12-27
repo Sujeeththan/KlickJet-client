@@ -162,15 +162,11 @@ export default function ShippingAddressPage() {
   if (items.length === 0) return null;
 
   function handleContinueToPayment(data: ShippingFormValues) {
-    // Check if user is logged in
-    if (!user) {
-      toast.error("Please log in to continue");
-      router.push("/auth/login");
-      return;
-    }
+    // Check if user is logged in (optional for now until payment)
+    // if (!user) ... removed
 
-    // Check if user is a customer
-    if (user.role !== "customer") {
+    // Check if user is a customer (if logged in)
+    if (user && user.role !== "customer") {
       toast.error("Only customers can place orders");
       return;
     }

@@ -43,7 +43,7 @@ type ShippingData = {
 };
 
 export default function PaymentMethodPage() {
-  const { items, cartTotal, clearCart } = useCart();
+  const { items, cartTotal, clearCart, isLoading } = useCart();
   const { user } = useAuth();
   const router = useRouter();
   
@@ -83,16 +83,17 @@ export default function PaymentMethodPage() {
     }
   }, [router]);
 
-  // Redirect if cart empty
+  // Redirect if cart empty (wait for loading)
   useEffect(() => {
-    if (items.length === 0) {
+    if (!isLoading && items.length === 0) {
       router.push("/cart");
       toast.error("Your cart is empty");
     }
-  }, [items, router]);
+  }, [items, isLoading, router]);
 
   // Redirect non-customers
   useEffect(() => {
+    // Only check role if user exists. If not logged in, we allow access (guest flow)
     if (user && user.role !== "customer") {
       toast.error("Only customers can checkout");
       if (user.role === "seller") {
@@ -105,13 +106,21 @@ export default function PaymentMethodPage() {
     }
   }, [user, router]);
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   if (items.length === 0 || !shippingData) return null;
 
   async function handlePlaceOrder() {
     // Check if user is logged in
     if (!user) {
       toast.error("Please log in to place your order");
-      router.push("/auth/login");
+      router.push("/auth/login?redirect=/checkout/payment");
       return;
     }
 
